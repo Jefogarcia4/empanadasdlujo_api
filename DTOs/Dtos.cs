@@ -183,7 +183,7 @@ public class OrdenDto
     public int IdOrden { get; set; }
     public int IdCliente { get; set; }
     public string? NombreCliente { get; set; }
-    public int IdLista { get; set; }
+    public int? IdLista { get; set; }
     public string? NombreLista { get; set; }
     public DateTime FechaOrden { get; set; }
     public string Estado { get; set; } = string.Empty;
@@ -197,8 +197,7 @@ public class OrdenCreateDto
     [Required]
     public int IdCliente { get; set; }
 
-    [Required]
-    public int IdLista { get; set; }
+    public int? IdLista { get; set; }
 
     [MaxLength(500)]
     public string? Observaciones { get; set; }
@@ -252,4 +251,27 @@ public class OrdenDetalleCreateDto
 
     [Required] [Range(1, int.MaxValue)]
     public int CantidadPaquetes { get; set; }
+}
+
+// ─── Pedido Completo (Cliente nuevo + Orden + Detalles) ──────
+public class PedidoCreateDto
+{
+    [Required]
+    public ClienteCreateDto Cliente { get; set; } = null!;
+
+    [Required]
+    public int? IdLista { get; set; }
+
+    [MaxLength(500)]
+    public string? Observaciones { get; set; }
+
+    [Required]
+    [MinLength(1, ErrorMessage = "La orden debe tener al menos un detalle.")]
+    public List<OrdenDetalleCreateDto> Detalles { get; set; } = new();
+}
+
+public class PedidoDto
+{
+    public ClienteDto Cliente { get; set; } = null!;
+    public OrdenDto Orden { get; set; } = null!;
 }

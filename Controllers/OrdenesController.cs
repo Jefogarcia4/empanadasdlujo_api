@@ -98,22 +98,27 @@ public class OrdenesController : ControllerBase
         if (!await _context.Clientes.AnyAsync(c => c.IdCliente == dto.IdCliente))
             return BadRequest("El cliente indicado no existe.");
 
-        if (!await _context.ListasPrecios.AnyAsync(l => l.IdLista == dto.IdLista))
+        if (dto.IdLista.HasValue && !await _context.ListasPrecios.AnyAsync(l => l.IdLista == dto.IdLista))
             return BadRequest("La lista de precios indicada no existe.");
 
         if (dto.Detalles.Count == 0)
             return BadRequest("La orden debe tener al menos un detalle.");
 
-        // Validate all SKUs and load their prices
+        // Cargar precios solo si se indicó lista
         var skuCodigos = dto.Detalles.Select(d => d.CodigoSku).Distinct().ToList();
-        var precios = await _context.PreciosSKU
-            .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == dto.IdLista)
-            .ToDictionaryAsync(p => p.CodigoSku);
+        var precios = dto.IdLista.HasValue
+            ? await _context.PreciosSKU
+                .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == dto.IdLista)
+                .ToDictionaryAsync(p => p.CodigoSku)
+            : new Dictionary<string, Models.PrecioSKU>();
 
-        foreach (var det in dto.Detalles)
+        if (dto.IdLista.HasValue)
         {
-            if (!precios.ContainsKey(det.CodigoSku))
-                return BadRequest($"No existe precio para el SKU '{det.CodigoSku}' en la lista seleccionada.");
+            foreach (var det in dto.Detalles)
+            {
+                if (!precios.ContainsKey(det.CodigoSku))
+                    return BadRequest($"No existe precio para el SKU '{det.CodigoSku}' en la lista seleccionada.");
+            }
         }
 
         var orden = new Orden
@@ -128,16 +133,15 @@ public class OrdenesController : ControllerBase
         decimal total = 0;
         foreach (var det in dto.Detalles)
         {
-            var precio = precios[det.CodigoSku];
             var detalle = new OrdenDetalle
             {
-                CodigoSku = det.CodigoSku,
+                CodigoSku        = det.CodigoSku,
                 CantidadPaquetes = det.CantidadPaquetes,
-                PrecioPaquete = precio.PrecioPaquete,
-                PrecioPorUnidad = precio.PrecioPorUnidad
+                PrecioPaquete    = precios.TryGetValue(det.CodigoSku, out var p) ? p.PrecioPaquete : 0,
+                PrecioPorUnidad  = precios.TryGetValue(det.CodigoSku, out var pu) ? pu.PrecioPorUnidad : 0
             };
             orden.Detalles.Add(detalle);
-            total += det.CantidadPaquetes * precio.PrecioPaquete;
+            total += det.CantidadPaquetes * detalle.PrecioPaquete;
         }
         orden.Total = total;
 
