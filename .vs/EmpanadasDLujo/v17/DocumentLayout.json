@@ -1,0 +1,155 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\dtos\\dtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:dtos\\dtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\controllers\\clientescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:controllers\\clientescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\models\\orden.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:models\\orden.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\empanadasdlujo.api.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:empanadasdlujo.api.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Dtos.cs",
+              "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\DTOs\\Dtos.cs",
+              "RelativeDocumentMoniker": "DTOs\\Dtos.cs",
+              "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\DTOs\\Dtos.cs",
+              "RelativeToolTip": "DTOs\\Dtos.cs",
+              "ViewState": "AgIAAJwAAAAAAAAAAAAowJoAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T17:03:44.126Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{67d15d2e-5bac-311f-82c3-d49feab601fd}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{65ddf8c3-8f89-4077-a6c6-dbb8853aab13}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2031669256:0:{bf84ea66-d821-4dba-b1b1-2777d8574775}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{fabf9319-47eb-497e-b8f6-d9f73fba5f55}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:14:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ClientesController.cs",
+              "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Controllers\\ClientesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ClientesController.cs",
+              "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Controllers\\ClientesController.cs",
+              "RelativeToolTip": "Controllers\\ClientesController.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAowCgAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T17:03:36.791Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Cliente.cs",
+              "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Models\\Cliente.cs",
+              "RelativeDocumentMoniker": "Models\\Cliente.cs",
+              "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Models\\Cliente.cs",
+              "RelativeToolTip": "Models\\Cliente.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAA5wB8AAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T17:03:10.769Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "EmpanadasDLujo.API",
+              "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\EmpanadasDLujo.API.csproj",
+              "RelativeDocumentMoniker": "EmpanadasDLujo.API.csproj",
+              "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\EmpanadasDLujo.API.csproj",
+              "RelativeToolTip": "EmpanadasDLujo.API.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-09T16:59:52.137Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Orden.cs",
+              "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Models\\Orden.cs",
+              "RelativeDocumentMoniker": "Models\\Orden.cs",
+              "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Models\\Orden.cs",
+              "RelativeToolTip": "Models\\Orden.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T16:54:10.627Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-09T16:50:56.817Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:13:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
