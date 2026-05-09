@@ -31,6 +31,7 @@ public class ClientesController : ControllerBase
             Telefono = c.Telefono,
             Email = c.Email,
             Direccion = c.Direccion,
+            Nit = c.Nit,
             Activo = c.Activo
         }).ToListAsync();
 
@@ -49,6 +50,7 @@ public class ClientesController : ControllerBase
             Telefono = item.Telefono,
             Email = item.Email,
             Direccion = item.Direccion,
+            Nit = item.Nit,
             Activo = item.Activo
         });
     }
@@ -62,6 +64,7 @@ public class ClientesController : ControllerBase
             Telefono = dto.Telefono,
             Email = dto.Email,
             Direccion = dto.Direccion,
+            Nit = dto.Nit,
             Activo = dto.Activo
         };
         _context.Clientes.Add(entity);
@@ -74,6 +77,7 @@ public class ClientesController : ControllerBase
             Telefono = entity.Telefono,
             Email = entity.Email,
             Direccion = entity.Direccion,
+            Nit = entity.Nit,
             Activo = entity.Activo
         };
         return CreatedAtAction(nameof(GetById), new { id = entity.IdCliente }, result);
@@ -89,6 +93,7 @@ public class ClientesController : ControllerBase
         entity.Telefono = dto.Telefono;
         entity.Email = dto.Email;
         entity.Direccion = dto.Direccion;
+        entity.Nit = dto.Nit;
         entity.Activo = dto.Activo;
         await _context.SaveChangesAsync();
         return NoContent();

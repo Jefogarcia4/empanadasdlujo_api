@@ -171,6 +171,9 @@ public class ClienteCreateDto
     [MaxLength(200)]
     public string? Direccion { get; set; }
 
+    [MaxLength(200)]
+    public string? Nit { get; set; }
+
     public bool Activo { get; set; } = true;
 }
 
