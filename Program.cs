@@ -16,6 +16,9 @@ builder.Services.AddAuthentication("BasicAuth")
 
 builder.Services.AddAuthorization();
 
+// ─── HttpClient ──────────────────────────────────────────────
+builder.Services.AddHttpClient();
+
 // ─── Controllers ─────────────────────────────────────────────
 builder.Services.AddControllers();
 
@@ -52,11 +55,11 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // ─── Middleware pipeline ──────────────────────────────────────
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 

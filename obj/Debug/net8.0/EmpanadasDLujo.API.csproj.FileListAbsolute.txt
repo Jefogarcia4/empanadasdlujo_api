@@ -144,4 +144,5 @@ D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Debug\net8.0\ref
 D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Debug\net8.0\EmpanadasDLujo.API.pdb
 D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Debug\net8.0\EmpanadasDLujo.API.genruntimeconfig.cache
 D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Debug\net8.0\ref\EmpanadasDLujo.API.dll
+D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Debug\net8.0\EmpanadasDLujo.API.sourcelink.json
 D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

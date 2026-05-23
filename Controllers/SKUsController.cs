@@ -27,17 +27,22 @@ public class SKUsController : ControllerBase
         if (activo.HasValue)
             query = query.Where(s => s.Activo == activo.Value);
 
-        var items = await query.Select(s => new SKUDto
-        {
-            CodigoSku = s.CodigoSku,
-            IdProducto = s.IdProducto,
-            NombreProducto = s.Producto.Nombre,
-            IdSabor = s.IdSabor,
-            NombreSabor = s.Sabor.Nombre,
-            GramajeG = s.GramajeG,
-            UnidadesPorPaquete = s.UnidadesPorPaquete,
-            Activo = s.Activo
-        }).ToListAsync();
+        var items = await query
+            .OrderBy(s => s.Orden ?? int.MaxValue)
+            .ThenBy(s => s.CodigoSku)
+            .Select(s => new SKUDto
+            {
+                CodigoSku = s.CodigoSku,
+                IdProducto = s.IdProducto,
+                NombreProducto = s.Producto.Nombre,
+                IdSabor = s.IdSabor,
+                NombreSabor = s.Sabor.Nombre,
+                GramajeG = s.GramajeG,
+                UnidadesPorPaquete = s.UnidadesPorPaquete,
+                Activo = s.Activo,
+                Orden = s.Orden,
+                BadgeDescripcion = s.BadgeDescripcion
+            }).ToListAsync();
 
         return Ok(items);
     }
@@ -61,7 +66,9 @@ public class SKUsController : ControllerBase
             NombreSabor = item.Sabor?.Nombre,
             GramajeG = item.GramajeG,
             UnidadesPorPaquete = item.UnidadesPorPaquete,
-            Activo = item.Activo
+            Activo = item.Activo,
+            Orden = item.Orden,
+            BadgeDescripcion = item.BadgeDescripcion
         });
     }
 
@@ -84,7 +91,9 @@ public class SKUsController : ControllerBase
             IdSabor = dto.IdSabor,
             GramajeG = dto.GramajeG,
             UnidadesPorPaquete = dto.UnidadesPorPaquete,
-            Activo = dto.Activo
+            Activo = dto.Activo,
+            Orden = dto.Orden,
+            BadgeDescripcion = dto.BadgeDescripcion
         };
         _context.SKUs.Add(entity);
         await _context.SaveChangesAsync();
@@ -97,7 +106,9 @@ public class SKUsController : ControllerBase
                 IdSabor = entity.IdSabor,
                 GramajeG = entity.GramajeG,
                 UnidadesPorPaquete = entity.UnidadesPorPaquete,
-                Activo = entity.Activo
+                Activo = entity.Activo,
+                Orden = entity.Orden,
+                BadgeDescripcion = entity.BadgeDescripcion
             });
     }
 
@@ -118,6 +129,8 @@ public class SKUsController : ControllerBase
         entity.GramajeG = dto.GramajeG;
         entity.UnidadesPorPaquete = dto.UnidadesPorPaquete;
         entity.Activo = dto.Activo;
+        entity.Orden = dto.Orden;
+        entity.BadgeDescripcion = dto.BadgeDescripcion;
         await _context.SaveChangesAsync();
         return NoContent();
     }

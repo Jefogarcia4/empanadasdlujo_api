@@ -57,6 +57,8 @@ public class SKUDto
     public decimal GramajeG { get; set; }
     public int UnidadesPorPaquete { get; set; }
     public bool Activo { get; set; }
+    public int? Orden { get; set; }
+    public string? BadgeDescripcion { get; set; }
 }
 
 public class SKUCreateDto
@@ -77,6 +79,11 @@ public class SKUCreateDto
     public int UnidadesPorPaquete { get; set; }
 
     public bool Activo { get; set; } = true;
+
+    public int? Orden { get; set; }
+
+    [MaxLength(100)]
+    public string? BadgeDescripcion { get; set; }
 }
 
 public class SKUUpdateDto
@@ -94,6 +101,11 @@ public class SKUUpdateDto
     public int UnidadesPorPaquete { get; set; }
 
     public bool Activo { get; set; }
+
+    public int? Orden { get; set; }
+
+    [MaxLength(100)]
+    public string? BadgeDescripcion { get; set; }
 }
 
 // ─── ListaPrecios ────────────────────────────────────────────
@@ -230,6 +242,9 @@ public class CatalogoSkuDto
     public decimal GramajeG { get; set; }
     public int UnidadesPorPaquete { get; set; }
     public bool Activo { get; set; }
+    public string? UrlImage { get; set; }
+    public int? Orden { get; set; }
+    public string? BadgeDescripcion { get; set; }
     public List<CatalogoPrecioDto> Precios { get; set; } = new();
 }
 
@@ -274,4 +289,42 @@ public class PedidoDto
 {
     public ClienteDto Cliente { get; set; } = null!;
     public OrdenDto Orden { get; set; } = null!;
+}
+
+// ─── WhatsApp ────────────────────────────────────────────────
+public class WhatsAppTemplateLanguageDto
+{
+    [Required]
+    public string Code { get; set; } = string.Empty;
+}
+
+public class WhatsAppTemplateComponentParameterDto
+{
+    [Required]
+    public string Type { get; set; } = string.Empty;
+    public string? Text { get; set; }
+}
+
+public class WhatsAppTemplateComponentDto
+{
+    [Required]
+    public string Type { get; set; } = string.Empty;
+    public List<WhatsAppTemplateComponentParameterDto>? Parameters { get; set; }
+}
+
+public class WhatsAppTemplateDto
+{
+    [Required]
+    public string Name { get; set; } = string.Empty;
+
+    [Required]
+    public WhatsAppTemplateLanguageDto Language { get; set; } = new();
+
+    public List<WhatsAppTemplateComponentDto>? Components { get; set; }
+}
+
+public class WhatsAppSendMessageDto
+{
+    [Required]
+    public WhatsAppTemplateDto Template { get; set; } = new();
 }

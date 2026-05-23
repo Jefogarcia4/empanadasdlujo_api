@@ -37,7 +37,8 @@ public class CatalogoController : ControllerBase
             skuQuery = skuQuery.Where(s => s.Producto.IdCategoria == idCategoria.Value);
 
         var skus = await skuQuery
-            .OrderBy(s => s.Producto.Categoria.Nombre)
+            .OrderBy(s => s.Orden ?? int.MaxValue)
+            .ThenBy(s => s.Producto.Categoria.Nombre)
             .ThenBy(s => s.Producto.Nombre)
             .ThenBy(s => s.CodigoSku)
             .ToListAsync();
@@ -51,6 +52,9 @@ public class CatalogoController : ControllerBase
             GramajeG = s.GramajeG,
             UnidadesPorPaquete = s.UnidadesPorPaquete,
             Activo = s.Activo,
+            UrlImage = s.UrlImage,
+            Orden = s.Orden,
+            BadgeDescripcion = s.BadgeDescripcion,
             Precios = s.Precios
                 .OrderBy(p => p.IdLista)
                 .Select(p => new CatalogoPrecioDto
@@ -88,7 +92,8 @@ public class CatalogoController : ControllerBase
             skuQuery = skuQuery.Where(s => s.Activo == activo.Value);
 
         var skus = await skuQuery
-            .OrderBy(s => s.Producto.Categoria.Nombre)
+            .OrderBy(s => s.Orden ?? int.MaxValue)
+            .ThenBy(s => s.Producto.Categoria.Nombre)
             .ThenBy(s => s.Producto.Nombre)
             .ThenBy(s => s.CodigoSku)
             .ToListAsync();
@@ -102,6 +107,9 @@ public class CatalogoController : ControllerBase
             GramajeG = s.GramajeG,
             UnidadesPorPaquete = s.UnidadesPorPaquete,
             Activo = s.Activo,
+            UrlImage = s.UrlImage,
+            Orden = s.Orden,
+            BadgeDescripcion = s.BadgeDescripcion,
             Precios = s.Precios.Select(p => new CatalogoPrecioDto
             {
                 NombreLista = p.ListaPrecios.Nombre,

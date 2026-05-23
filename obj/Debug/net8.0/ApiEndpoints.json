@@ -515,6 +515,32 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.PedidosController",
+    "Method": "Create",
+    "RelativePath": "api/Pedidos",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "EmpanadasDLujo.API.DTOs.PedidoCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EmpanadasDLujo.API.DTOs.PedidoDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "EmpanadasDLujo.API.Controllers.PreciosSKUController",
     "Method": "GetAll",
     "RelativePath": "api/PreciosSKU",
@@ -962,6 +988,22 @@
       {
         "Name": "codigo",
         "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.WhatsAppController",
+    "Method": "SendMessage",
+    "RelativePath": "api/WhatsApp/send_message",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "EmpanadasDLujo.API.DTOs.WhatsAppSendMessageDto",
         "IsRequired": true
       }
     ],

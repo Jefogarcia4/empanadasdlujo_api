@@ -28,6 +28,17 @@ public class SKU
     [Column("activo")]
     public bool Activo { get; set; } = true;
 
+    [MaxLength(255)]
+    [Column("url_image")]
+    public string? UrlImage { get; set; }
+
+    [Column("orden")]
+    public int? Orden { get; set; }
+
+    [MaxLength(100)]
+    [Column("bagde_descripcion")]
+    public string? BadgeDescripcion { get; set; }
+
     [ForeignKey(nameof(IdProducto))]
     public Producto Producto { get; set; } = null!;
 
