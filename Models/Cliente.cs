@@ -15,6 +15,10 @@ public class Cliente
     [Column("nombre")]
     public string Nombre { get; set; } = string.Empty;
 
+    [MaxLength(100)]
+    [Column("apellidos")]
+    public string? Apellidos { get; set; }
+
     [MaxLength(20)]
     [Column("telefono")]
     public string? Telefono { get; set; }
@@ -26,6 +30,26 @@ public class Cliente
     [MaxLength(200)]
     [Column("direccion")]
     public string? Direccion { get; set; }
+
+    [MaxLength(100)]
+    [Column("casa_apartamento")]
+    public string? CasaApartamento { get; set; }
+
+    [MaxLength(100)]
+    [Column("ciudad")]
+    public string? Ciudad { get; set; }
+
+    [MaxLength(100)]
+    [Column("departamento")]
+    public string? Departamento { get; set; }
+
+    [MaxLength(20)]
+    [Column("codigo_postal")]
+    public string? CodigoPostal { get; set; }
+
+    [MaxLength(50)]
+    [Column("pais")]
+    public string? Pais { get; set; } = "Colombia";
 
     [MaxLength(200)]
     [Column("nit")]

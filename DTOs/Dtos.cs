@@ -161,9 +161,15 @@ public class ClienteDto
 {
     public int IdCliente { get; set; }
     public string Nombre { get; set; } = string.Empty;
+    public string? Apellidos { get; set; }
     public string? Telefono { get; set; }
     public string? Email { get; set; }
     public string? Direccion { get; set; }
+    public string? CasaApartamento { get; set; }
+    public string? Ciudad { get; set; }
+    public string? Departamento { get; set; }
+    public string? CodigoPostal { get; set; }
+    public string? Pais { get; set; }
     public string? Nit { get; set; }
     public bool Activo { get; set; }
 }
@@ -172,6 +178,9 @@ public class ClienteCreateDto
 {
     [Required] [MaxLength(100)]
     public string Nombre { get; set; } = string.Empty;
+
+    [MaxLength(100)]
+    public string? Apellidos { get; set; }
 
     [MaxLength(20)]
     public string? Telefono { get; set; }
@@ -182,6 +191,21 @@ public class ClienteCreateDto
 
     [MaxLength(200)]
     public string? Direccion { get; set; }
+
+    [MaxLength(100)]
+    public string? CasaApartamento { get; set; }
+
+    [MaxLength(100)]
+    public string? Ciudad { get; set; }
+
+    [MaxLength(100)]
+    public string? Departamento { get; set; }
+
+    [MaxLength(20)]
+    public string? CodigoPostal { get; set; }
+
+    [MaxLength(50)]
+    public string? Pais { get; set; } = "Colombia";
 
     [MaxLength(200)]
     public string? Nit { get; set; }

@@ -16,6 +16,23 @@ public class ClientesController : ControllerBase
 
     public ClientesController(AppDbContext context) => _context = context;
 
+    private static ClienteDto ToDto(Cliente c) => new()
+    {
+        IdCliente = c.IdCliente,
+        Nombre = c.Nombre,
+        Apellidos = c.Apellidos,
+        Telefono = c.Telefono,
+        Email = c.Email,
+        Direccion = c.Direccion,
+        CasaApartamento = c.CasaApartamento,
+        Ciudad = c.Ciudad,
+        Departamento = c.Departamento,
+        CodigoPostal = c.CodigoPostal,
+        Pais = c.Pais,
+        Nit = c.Nit,
+        Activo = c.Activo
+    };
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ClienteDto>>> GetAll([FromQuery] bool? activo = null)
     {
@@ -28,9 +45,15 @@ public class ClientesController : ControllerBase
         {
             IdCliente = c.IdCliente,
             Nombre = c.Nombre,
+            Apellidos = c.Apellidos,
             Telefono = c.Telefono,
             Email = c.Email,
             Direccion = c.Direccion,
+            CasaApartamento = c.CasaApartamento,
+            Ciudad = c.Ciudad,
+            Departamento = c.Departamento,
+            CodigoPostal = c.CodigoPostal,
+            Pais = c.Pais,
             Nit = c.Nit,
             Activo = c.Activo
         }).ToListAsync();
@@ -43,16 +66,7 @@ public class ClientesController : ControllerBase
     {
         var item = await _context.Clientes.FindAsync(id);
         if (item is null) return NotFound();
-        return Ok(new ClienteDto
-        {
-            IdCliente = item.IdCliente,
-            Nombre = item.Nombre,
-            Telefono = item.Telefono,
-            Email = item.Email,
-            Direccion = item.Direccion,
-            Nit = item.Nit,
-            Activo = item.Activo
-        });
+        return Ok(ToDto(item));
     }
 
     [HttpPost]
@@ -61,26 +75,22 @@ public class ClientesController : ControllerBase
         var entity = new Cliente
         {
             Nombre = dto.Nombre,
+            Apellidos = dto.Apellidos,
             Telefono = dto.Telefono,
             Email = dto.Email,
             Direccion = dto.Direccion,
+            CasaApartamento = dto.CasaApartamento,
+            Ciudad = dto.Ciudad,
+            Departamento = dto.Departamento,
+            CodigoPostal = dto.CodigoPostal,
+            Pais = dto.Pais ?? "Colombia",
             Nit = dto.Nit,
             Activo = dto.Activo
         };
         _context.Clientes.Add(entity);
         await _context.SaveChangesAsync();
 
-        var result = new ClienteDto
-        {
-            IdCliente = entity.IdCliente,
-            Nombre = entity.Nombre,
-            Telefono = entity.Telefono,
-            Email = entity.Email,
-            Direccion = entity.Direccion,
-            Nit = entity.Nit,
-            Activo = entity.Activo
-        };
-        return CreatedAtAction(nameof(GetById), new { id = entity.IdCliente }, result);
+        return CreatedAtAction(nameof(GetById), new { id = entity.IdCliente }, ToDto(entity));
     }
 
     [HttpPut("{id:int}")]
@@ -90,9 +100,15 @@ public class ClientesController : ControllerBase
         if (entity is null) return NotFound();
 
         entity.Nombre = dto.Nombre;
+        entity.Apellidos = dto.Apellidos;
         entity.Telefono = dto.Telefono;
         entity.Email = dto.Email;
         entity.Direccion = dto.Direccion;
+        entity.CasaApartamento = dto.CasaApartamento;
+        entity.Ciudad = dto.Ciudad;
+        entity.Departamento = dto.Departamento;
+        entity.CodigoPostal = dto.CodigoPostal;
+        entity.Pais = dto.Pais ?? "Colombia";
         entity.Nit = dto.Nit;
         entity.Activo = dto.Activo;
         await _context.SaveChangesAsync();

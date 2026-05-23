@@ -53,12 +53,18 @@ public class PedidosController : ControllerBase
         // 4. Crear cliente
         var cliente = new Cliente
         {
-            Nombre    = dto.Cliente.Nombre,
-            Telefono  = dto.Cliente.Telefono,
-            Email     = dto.Cliente.Email,
-            Direccion = dto.Cliente.Direccion,
-            Nit       = dto.Cliente.Nit,
-            Activo    = dto.Cliente.Activo
+            Nombre          = dto.Cliente.Nombre,
+            Apellidos       = dto.Cliente.Apellidos,
+            Telefono        = dto.Cliente.Telefono,
+            Email           = dto.Cliente.Email,
+            Direccion       = dto.Cliente.Direccion,
+            CasaApartamento = dto.Cliente.CasaApartamento,
+            Ciudad          = dto.Cliente.Ciudad,
+            Departamento    = dto.Cliente.Departamento,
+            CodigoPostal    = dto.Cliente.CodigoPostal,
+            Pais            = dto.Cliente.Pais ?? "Colombia",
+            Nit             = dto.Cliente.Nit,
+            Activo          = dto.Cliente.Activo
         };
         _context.Clientes.Add(cliente);
 
@@ -98,13 +104,19 @@ public class PedidosController : ControllerBase
         {
             Cliente = new ClienteDto
             {
-                IdCliente = cliente.IdCliente,
-                Nombre    = cliente.Nombre,
-                Telefono  = cliente.Telefono,
-                Email     = cliente.Email,
-                Direccion = cliente.Direccion,
-                Nit       = cliente.Nit,
-                Activo    = cliente.Activo
+                IdCliente       = cliente.IdCliente,
+                Nombre          = cliente.Nombre,
+                Apellidos       = cliente.Apellidos,
+                Telefono        = cliente.Telefono,
+                Email           = cliente.Email,
+                Direccion       = cliente.Direccion,
+                CasaApartamento = cliente.CasaApartamento,
+                Ciudad          = cliente.Ciudad,
+                Departamento    = cliente.Departamento,
+                CodigoPostal    = cliente.CodigoPostal,
+                Pais            = cliente.Pais,
+                Nit             = cliente.Nit,
+                Activo          = cliente.Activo
             },
             Orden = new OrdenDto
             {
