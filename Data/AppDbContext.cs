@@ -80,5 +80,23 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Orden>()
             .Property(o => o.Total)
             .HasDefaultValue(0m);
+
+        modelBuilder.Entity<Orden>()
+            .Property(o => o.Subtotal)
+            .HasDefaultValue(0m);
+
+        modelBuilder.Entity<Orden>()
+            .Property(o => o.Descuento)
+            .HasDefaultValue(0m);
+
+        // Cliente: guardar_info default 0
+        modelBuilder.Entity<Cliente>()
+            .Property(c => c.GuardarInfo)
+            .HasDefaultValue(false);
+
+        // OrdenDetalle: aplica_mayorista default 0
+        modelBuilder.Entity<OrdenDetalle>()
+            .Property(od => od.AplicaMayorista)
+            .HasDefaultValue(false);
     }
 }

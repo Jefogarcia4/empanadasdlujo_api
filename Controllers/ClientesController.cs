@@ -30,7 +30,8 @@ public class ClientesController : ControllerBase
         CodigoPostal = c.CodigoPostal,
         Pais = c.Pais,
         Nit = c.Nit,
-        Activo = c.Activo
+        Activo = c.Activo,
+        GuardarInfo = c.GuardarInfo
     };
 
     [HttpGet]
@@ -55,7 +56,8 @@ public class ClientesController : ControllerBase
             CodigoPostal = c.CodigoPostal,
             Pais = c.Pais,
             Nit = c.Nit,
-            Activo = c.Activo
+            Activo = c.Activo,
+            GuardarInfo = c.GuardarInfo
         }).ToListAsync();
 
         return Ok(items);
@@ -85,7 +87,8 @@ public class ClientesController : ControllerBase
             CodigoPostal = dto.CodigoPostal,
             Pais = dto.Pais ?? "Colombia",
             Nit = dto.Nit,
-            Activo = dto.Activo
+            Activo = dto.Activo,
+            GuardarInfo = dto.GuardarInfo
         };
         _context.Clientes.Add(entity);
         await _context.SaveChangesAsync();
@@ -111,6 +114,7 @@ public class ClientesController : ControllerBase
         entity.Pais = dto.Pais ?? "Colombia";
         entity.Nit = dto.Nit;
         entity.Activo = dto.Activo;
+        entity.GuardarInfo = dto.GuardarInfo;
         await _context.SaveChangesAsync();
         return NoContent();
     }

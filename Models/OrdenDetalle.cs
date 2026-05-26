@@ -22,12 +22,19 @@ public class OrdenDetalle
     public int CantidadPaquetes { get; set; }
 
     [Required]
+    [Column("precio_paquete_detal", TypeName = "decimal(12,2)")]
+    public decimal PrecioPaqueteDetal { get; set; }
+
+    [Required]
     [Column("precio_paquete", TypeName = "decimal(12,2)")]
     public decimal PrecioPaquete { get; set; }
 
     [Required]
     [Column("precio_por_unidad", TypeName = "decimal(12,2)")]
     public decimal PrecioPorUnidad { get; set; }
+
+    [Column("aplica_mayorista")]
+    public bool AplicaMayorista { get; set; } = false;
 
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     [Column("subtotal", TypeName = "decimal(12,2)")]

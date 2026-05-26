@@ -58,5 +58,8 @@ public class Cliente
     [Column("activo")]
     public bool Activo { get; set; } = true;
 
+    [Column("guardar_info")]
+    public bool GuardarInfo { get; set; } = false;
+
     public ICollection<Orden> Ordenes { get; set; } = new List<Orden>();
 }

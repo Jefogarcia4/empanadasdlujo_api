@@ -13,9 +13,6 @@ public class Orden
     [Column("id_cliente")]
     public int IdCliente { get; set; }
 
-    [Column("id_lista")]
-    public int? IdLista { get; set; }
-
     [Column("fecha_orden")]
     public DateTime FechaOrden { get; set; } = DateTime.Now;
 
@@ -23,6 +20,12 @@ public class Orden
     [MaxLength(20)]
     [Column("estado")]
     public string Estado { get; set; } = "PENDIENTE";
+
+    [Column("subtotal", TypeName = "decimal(14,2)")]
+    public decimal Subtotal { get; set; } = 0;
+
+    [Column("descuento", TypeName = "decimal(14,2)")]
+    public decimal Descuento { get; set; } = 0;
 
     [Column("total", TypeName = "decimal(14,2)")]
     public decimal Total { get; set; } = 0;
@@ -33,9 +36,6 @@ public class Orden
 
     [ForeignKey(nameof(IdCliente))]
     public Cliente Cliente { get; set; } = null!;
-
-    [ForeignKey(nameof(IdLista))]
-    public ListaPrecios ListaPrecios { get; set; } = null!;
 
     public ICollection<OrdenDetalle> Detalles { get; set; } = new List<OrdenDetalle>();
 }

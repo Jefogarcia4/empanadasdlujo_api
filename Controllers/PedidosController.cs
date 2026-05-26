@@ -14,41 +14,49 @@ public class PedidosController : ControllerBase
 {
     private readonly AppDbContext _context;
 
+    // Lista PVxD = precio detal (retail); lista PVxM = precio mayorista
+    private const string LISTA_DETAL = "Web";
+    private const string LISTA_MAYOR = "PVxM";
+    private const int UMBRAL_MAYORISTA = 10;
+
     public PedidosController(AppDbContext context) => _context = context;
 
     /// <summary>
-    /// Crea un cliente nuevo, su orden y los detalles en una sola operación atómica.
+    /// Crea cliente + orden + detalles en una sola transacción.
+    /// El cliente envía solo SKU y cantidad. El API consulta los precios PVxD y PVxM
+    /// y aplica la regla: si total de paquetes >= 10 → todos a PVxM.
     /// </summary>
     [HttpPost]
     public async Task<ActionResult<PedidoDto>> Create(PedidoCreateDto dto)
     {
-        // 1. Validar lista de precios (solo si se indicó)
-        ListaPrecios? lista = null;
-        if (dto.IdLista.HasValue)
-        {
-            lista = await _context.ListasPrecios.FindAsync(dto.IdLista.Value);
-            if (lista is null)
-                return BadRequest("La lista de precios indicada no existe.");
-        }
-
-        // 2. Validar que lleguen detalles
         if (dto.Detalles.Count == 0)
             return BadRequest("La orden debe tener al menos un detalle.");
 
-        // 3. Validar que todos los SKUs tengan precio en la lista seleccionada (solo si hay lista)
-        var skuCodigos = dto.Detalles.Select(d => d.CodigoSku).Distinct().ToList();
-        var precios = dto.IdLista.HasValue
-            ? await _context.PreciosSKU
-                .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == dto.IdLista)
-                .ToDictionaryAsync(p => p.CodigoSku)
-            : new Dictionary<string, Models.PrecioSKU>();
+        // 1. Resolver listas PVxD y PVxM
+        var listaDetal = await _context.ListasPrecios.FirstOrDefaultAsync(l => l.Nombre == LISTA_DETAL);
+        var listaMayor = await _context.ListasPrecios.FirstOrDefaultAsync(l => l.Nombre == LISTA_MAYOR);
+        if (listaDetal is null)
+            return BadRequest($"No existe la lista de precios '{LISTA_DETAL}'.");
 
-        if (dto.IdLista.HasValue)
-        {
-            var skusSinPrecio = skuCodigos.Except(precios.Keys).ToList();
-            if (skusSinPrecio.Count > 0)
-                return BadRequest($"Sin precio en la lista seleccionada: {string.Join(", ", skusSinPrecio)}.");
-        }
+        // 2. Cargar precios de los SKUs solicitados
+        var skuCodigos = dto.Detalles.Select(d => d.CodigoSku).Distinct().ToList();
+        var preciosDetal = await _context.PreciosSKU
+            .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == listaDetal.IdLista)
+            .ToDictionaryAsync(p => p.CodigoSku);
+
+        var skusSinDetal = skuCodigos.Except(preciosDetal.Keys).ToList();
+        if (skusSinDetal.Count > 0)
+            return BadRequest($"Sin precio detal en '{LISTA_DETAL}': {string.Join(", ", skusSinDetal)}.");
+
+        var preciosMayor = listaMayor is null
+            ? new Dictionary<string, PrecioSKU>()
+            : await _context.PreciosSKU
+                .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == listaMayor.IdLista)
+                .ToDictionaryAsync(p => p.CodigoSku);
+
+        // 3. Aplicar regla mayorista: total de paquetes >= UMBRAL
+        var totalPaquetes = dto.Detalles.Sum(d => d.CantidadPaquetes);
+        var calificaMayorista = totalPaquetes >= UMBRAL_MAYORISTA;
 
         // 4. Crear cliente
         var cliente = new Cliente
@@ -64,42 +72,61 @@ public class PedidosController : ControllerBase
             CodigoPostal    = dto.Cliente.CodigoPostal,
             Pais            = dto.Cliente.Pais ?? "Colombia",
             Nit             = dto.Cliente.Nit,
-            Activo          = dto.Cliente.Activo
+            Activo          = dto.Cliente.Activo,
+            GuardarInfo     = dto.Cliente.GuardarInfo
         };
         _context.Clientes.Add(cliente);
 
-        // 5. Crear orden (EF resolverá el IdCliente tras SaveChanges por la relación)
+        // 5. Crear orden
         var orden = new Orden
         {
-            Cliente      = cliente,
-            IdLista      = dto.IdLista,
-            FechaOrden   = DateTime.Now,
-            Estado       = "PENDIENTE",
+            Cliente       = cliente,
+            FechaOrden    = DateTime.Now,
+            Estado        = "PENDIENTE",
             Observaciones = dto.Observaciones
         };
 
-        // 6. Crear detalles y calcular total
+        // 6. Crear detalles y acumular totales
+        decimal subtotal = 0;
         decimal total = 0;
         foreach (var det in dto.Detalles)
         {
+            var precioDetal = preciosDetal[det.CodigoSku];
+            var aplicaMayor = calificaMayorista
+                && preciosMayor.TryGetValue(det.CodigoSku, out var pm)
+                && pm.PrecioPaquete > 0
+                && pm.PrecioPaquete < precioDetal.PrecioPaquete;
+
+            var precioPaqueteFinal = aplicaMayor
+                ? preciosMayor[det.CodigoSku].PrecioPaquete
+                : precioDetal.PrecioPaquete;
+            var precioUnidadFinal = aplicaMayor
+                ? preciosMayor[det.CodigoSku].PrecioPorUnidad
+                : precioDetal.PrecioPorUnidad;
+
             var detalle = new OrdenDetalle
             {
-                CodigoSku        = det.CodigoSku,
-                CantidadPaquetes = det.CantidadPaquetes,
-                PrecioPaquete    = precios.TryGetValue(det.CodigoSku, out var p) ? p.PrecioPaquete : 0,
-                PrecioPorUnidad  = precios.TryGetValue(det.CodigoSku, out var pu) ? pu.PrecioPorUnidad : 0
+                CodigoSku          = det.CodigoSku,
+                CantidadPaquetes   = det.CantidadPaquetes,
+                PrecioPaqueteDetal = precioDetal.PrecioPaquete,
+                PrecioPaquete      = precioPaqueteFinal,
+                PrecioPorUnidad    = precioUnidadFinal,
+                AplicaMayorista    = aplicaMayor
             };
             orden.Detalles.Add(detalle);
-            total += det.CantidadPaquetes * detalle.PrecioPaquete;
+
+            subtotal += det.CantidadPaquetes * precioDetal.PrecioPaquete;
+            total    += det.CantidadPaquetes * precioPaqueteFinal;
         }
-        orden.Total = total;
+
+        orden.Subtotal  = subtotal;
+        orden.Total     = total;
+        orden.Descuento = subtotal - total;
 
         _context.Ordenes.Add(orden);
-
-        // 7. Persistir todo en una sola transacción
         await _context.SaveChangesAsync();
 
-        // 8. Construir respuesta
+        // 7. Respuesta
         var result = new PedidoDto
         {
             Cliente = new ClienteDto
@@ -116,27 +143,30 @@ public class PedidosController : ControllerBase
                 CodigoPostal    = cliente.CodigoPostal,
                 Pais            = cliente.Pais,
                 Nit             = cliente.Nit,
-                Activo          = cliente.Activo
+                Activo          = cliente.Activo,
+                GuardarInfo     = cliente.GuardarInfo
             },
             Orden = new OrdenDto
             {
-                IdOrden      = orden.IdOrden,
-                IdCliente    = orden.IdCliente,
+                IdOrden       = orden.IdOrden,
+                IdCliente     = orden.IdCliente,
                 NombreCliente = cliente.Nombre,
-                IdLista       = orden.IdLista,
-                NombreLista   = lista?.Nombre,
-                FechaOrden   = orden.FechaOrden,
-                Estado       = orden.Estado,
-                Total        = orden.Total,
+                FechaOrden    = orden.FechaOrden,
+                Estado        = orden.Estado,
+                Subtotal      = orden.Subtotal,
+                Descuento     = orden.Descuento,
+                Total         = orden.Total,
                 Observaciones = orden.Observaciones,
-                Detalles     = orden.Detalles.Select(d => new OrdenDetalleDto
+                Detalles      = orden.Detalles.Select(d => new OrdenDetalleDto
                 {
-                    IdDetalle       = d.IdDetalle,
-                    CodigoSku       = d.CodigoSku,
-                    CantidadPaquetes = d.CantidadPaquetes,
-                    PrecioPaquete   = d.PrecioPaquete,
-                    PrecioPorUnidad = d.PrecioPorUnidad,
-                    Subtotal        = d.CantidadPaquetes * d.PrecioPaquete
+                    IdDetalle          = d.IdDetalle,
+                    CodigoSku          = d.CodigoSku,
+                    CantidadPaquetes   = d.CantidadPaquetes,
+                    PrecioPaqueteDetal = d.PrecioPaqueteDetal,
+                    PrecioPaquete      = d.PrecioPaquete,
+                    PrecioPorUnidad    = d.PrecioPorUnidad,
+                    AplicaMayorista    = d.AplicaMayorista,
+                    Subtotal           = d.CantidadPaquetes * d.PrecioPaquete
                 }).ToList()
             }
         };

@@ -12,6 +12,10 @@ namespace EmpanadasDLujo.API.Controllers;
 [Route("api/[controller]")]
 public class OrdenesController : ControllerBase
 {
+    private const string LISTA_DETAL = "Web";
+    private const string LISTA_MAYOR = "PVxM";
+    private const int UMBRAL_MAYORISTA = 10;
+
     private readonly AppDbContext _context;
 
     public OrdenesController(AppDbContext context) => _context = context;
@@ -23,7 +27,6 @@ public class OrdenesController : ControllerBase
     {
         var query = _context.Ordenes
             .Include(o => o.Cliente)
-            .Include(o => o.ListaPrecios)
             .Include(o => o.Detalles)
             .AsQueryable();
 
@@ -35,23 +38,25 @@ public class OrdenesController : ControllerBase
 
         var items = await query.Select(o => new OrdenDto
         {
-            IdOrden = o.IdOrden,
-            IdCliente = o.IdCliente,
+            IdOrden       = o.IdOrden,
+            IdCliente     = o.IdCliente,
             NombreCliente = o.Cliente.Nombre,
-            IdLista = o.IdLista,
-            NombreLista = o.ListaPrecios.Nombre,
-            FechaOrden = o.FechaOrden,
-            Estado = o.Estado,
-            Total = o.Total,
+            FechaOrden    = o.FechaOrden,
+            Estado        = o.Estado,
+            Subtotal      = o.Subtotal,
+            Descuento     = o.Descuento,
+            Total         = o.Total,
             Observaciones = o.Observaciones,
             Detalles = o.Detalles.Select(d => new OrdenDetalleDto
             {
-                IdDetalle = d.IdDetalle,
-                CodigoSku = d.CodigoSku,
-                CantidadPaquetes = d.CantidadPaquetes,
-                PrecioPaquete = d.PrecioPaquete,
-                PrecioPorUnidad = d.PrecioPorUnidad,
-                Subtotal = d.Subtotal
+                IdDetalle          = d.IdDetalle,
+                CodigoSku          = d.CodigoSku,
+                CantidadPaquetes   = d.CantidadPaquetes,
+                PrecioPaqueteDetal = d.PrecioPaqueteDetal,
+                PrecioPaquete      = d.PrecioPaquete,
+                PrecioPorUnidad    = d.PrecioPorUnidad,
+                AplicaMayorista    = d.AplicaMayorista,
+                Subtotal           = d.Subtotal
             }).ToList()
         }).ToListAsync();
 
@@ -63,7 +68,6 @@ public class OrdenesController : ControllerBase
     {
         var item = await _context.Ordenes
             .Include(o => o.Cliente)
-            .Include(o => o.ListaPrecios)
             .Include(o => o.Detalles)
             .FirstOrDefaultAsync(o => o.IdOrden == id);
 
@@ -71,23 +75,25 @@ public class OrdenesController : ControllerBase
 
         return Ok(new OrdenDto
         {
-            IdOrden = item.IdOrden,
-            IdCliente = item.IdCliente,
+            IdOrden       = item.IdOrden,
+            IdCliente     = item.IdCliente,
             NombreCliente = item.Cliente?.Nombre,
-            IdLista = item.IdLista,
-            NombreLista = item.ListaPrecios?.Nombre,
-            FechaOrden = item.FechaOrden,
-            Estado = item.Estado,
-            Total = item.Total,
+            FechaOrden    = item.FechaOrden,
+            Estado        = item.Estado,
+            Subtotal      = item.Subtotal,
+            Descuento     = item.Descuento,
+            Total         = item.Total,
             Observaciones = item.Observaciones,
             Detalles = item.Detalles.Select(d => new OrdenDetalleDto
             {
-                IdDetalle = d.IdDetalle,
-                CodigoSku = d.CodigoSku,
-                CantidadPaquetes = d.CantidadPaquetes,
-                PrecioPaquete = d.PrecioPaquete,
-                PrecioPorUnidad = d.PrecioPorUnidad,
-                Subtotal = d.Subtotal
+                IdDetalle          = d.IdDetalle,
+                CodigoSku          = d.CodigoSku,
+                CantidadPaquetes   = d.CantidadPaquetes,
+                PrecioPaqueteDetal = d.PrecioPaqueteDetal,
+                PrecioPaquete      = d.PrecioPaquete,
+                PrecioPorUnidad    = d.PrecioPorUnidad,
+                AplicaMayorista    = d.AplicaMayorista,
+                Subtotal           = d.Subtotal
             }).ToList()
         });
     }
@@ -98,52 +104,75 @@ public class OrdenesController : ControllerBase
         if (!await _context.Clientes.AnyAsync(c => c.IdCliente == dto.IdCliente))
             return BadRequest("El cliente indicado no existe.");
 
-        if (dto.IdLista.HasValue && !await _context.ListasPrecios.AnyAsync(l => l.IdLista == dto.IdLista))
-            return BadRequest("La lista de precios indicada no existe.");
-
         if (dto.Detalles.Count == 0)
             return BadRequest("La orden debe tener al menos un detalle.");
 
-        // Cargar precios solo si se indicó lista
-        var skuCodigos = dto.Detalles.Select(d => d.CodigoSku).Distinct().ToList();
-        var precios = dto.IdLista.HasValue
-            ? await _context.PreciosSKU
-                .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == dto.IdLista)
-                .ToDictionaryAsync(p => p.CodigoSku)
-            : new Dictionary<string, Models.PrecioSKU>();
+        var listaDetal = await _context.ListasPrecios.FirstOrDefaultAsync(l => l.Nombre == LISTA_DETAL);
+        var listaMayor = await _context.ListasPrecios.FirstOrDefaultAsync(l => l.Nombre == LISTA_MAYOR);
+        if (listaDetal is null)
+            return BadRequest($"No existe la lista de precios '{LISTA_DETAL}'.");
 
-        if (dto.IdLista.HasValue)
-        {
-            foreach (var det in dto.Detalles)
-            {
-                if (!precios.ContainsKey(det.CodigoSku))
-                    return BadRequest($"No existe precio para el SKU '{det.CodigoSku}' en la lista seleccionada.");
-            }
-        }
+        var skuCodigos = dto.Detalles.Select(d => d.CodigoSku).Distinct().ToList();
+        var preciosDetal = await _context.PreciosSKU
+            .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == listaDetal.IdLista)
+            .ToDictionaryAsync(p => p.CodigoSku);
+
+        var skusSinDetal = skuCodigos.Except(preciosDetal.Keys).ToList();
+        if (skusSinDetal.Count > 0)
+            return BadRequest($"Sin precio detal en '{LISTA_DETAL}': {string.Join(", ", skusSinDetal)}.");
+
+        var preciosMayor = listaMayor is null
+            ? new Dictionary<string, PrecioSKU>()
+            : await _context.PreciosSKU
+                .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == listaMayor.IdLista)
+                .ToDictionaryAsync(p => p.CodigoSku);
+
+        var totalPaquetes = dto.Detalles.Sum(d => d.CantidadPaquetes);
+        var calificaMayorista = totalPaquetes >= UMBRAL_MAYORISTA;
 
         var orden = new Orden
         {
-            IdCliente = dto.IdCliente,
-            IdLista = dto.IdLista,
-            FechaOrden = DateTime.Now,
-            Estado = "PENDIENTE",
+            IdCliente     = dto.IdCliente,
+            FechaOrden    = DateTime.Now,
+            Estado        = "PENDIENTE",
             Observaciones = dto.Observaciones
         };
 
+        decimal subtotal = 0;
         decimal total = 0;
         foreach (var det in dto.Detalles)
         {
+            var precioDetal = preciosDetal[det.CodigoSku];
+            var aplicaMayor = calificaMayorista
+                && preciosMayor.TryGetValue(det.CodigoSku, out var pm)
+                && pm.PrecioPaquete > 0
+                && pm.PrecioPaquete < precioDetal.PrecioPaquete;
+
+            var precioPaqueteFinal = aplicaMayor
+                ? preciosMayor[det.CodigoSku].PrecioPaquete
+                : precioDetal.PrecioPaquete;
+            var precioUnidadFinal = aplicaMayor
+                ? preciosMayor[det.CodigoSku].PrecioPorUnidad
+                : precioDetal.PrecioPorUnidad;
+
             var detalle = new OrdenDetalle
             {
-                CodigoSku        = det.CodigoSku,
-                CantidadPaquetes = det.CantidadPaquetes,
-                PrecioPaquete    = precios.TryGetValue(det.CodigoSku, out var p) ? p.PrecioPaquete : 0,
-                PrecioPorUnidad  = precios.TryGetValue(det.CodigoSku, out var pu) ? pu.PrecioPorUnidad : 0
+                CodigoSku          = det.CodigoSku,
+                CantidadPaquetes   = det.CantidadPaquetes,
+                PrecioPaqueteDetal = precioDetal.PrecioPaquete,
+                PrecioPaquete      = precioPaqueteFinal,
+                PrecioPorUnidad    = precioUnidadFinal,
+                AplicaMayorista    = aplicaMayor
             };
             orden.Detalles.Add(detalle);
-            total += det.CantidadPaquetes * detalle.PrecioPaquete;
+
+            subtotal += det.CantidadPaquetes * precioDetal.PrecioPaquete;
+            total    += det.CantidadPaquetes * precioPaqueteFinal;
         }
-        orden.Total = total;
+
+        orden.Subtotal  = subtotal;
+        orden.Total     = total;
+        orden.Descuento = subtotal - total;
 
         _context.Ordenes.Add(orden);
         await _context.SaveChangesAsync();
@@ -151,21 +180,24 @@ public class OrdenesController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = orden.IdOrden },
             new OrdenDto
             {
-                IdOrden = orden.IdOrden,
-                IdCliente = orden.IdCliente,
-                IdLista = orden.IdLista,
-                FechaOrden = orden.FechaOrden,
-                Estado = orden.Estado,
-                Total = orden.Total,
+                IdOrden       = orden.IdOrden,
+                IdCliente     = orden.IdCliente,
+                FechaOrden    = orden.FechaOrden,
+                Estado        = orden.Estado,
+                Subtotal      = orden.Subtotal,
+                Descuento     = orden.Descuento,
+                Total         = orden.Total,
                 Observaciones = orden.Observaciones,
-                Detalles = orden.Detalles.Select(d => new OrdenDetalleDto
+                Detalles      = orden.Detalles.Select(d => new OrdenDetalleDto
                 {
-                    IdDetalle = d.IdDetalle,
-                    CodigoSku = d.CodigoSku,
-                    CantidadPaquetes = d.CantidadPaquetes,
-                    PrecioPaquete = d.PrecioPaquete,
-                    PrecioPorUnidad = d.PrecioPorUnidad,
-                    Subtotal = d.CantidadPaquetes * d.PrecioPaquete
+                    IdDetalle          = d.IdDetalle,
+                    CodigoSku          = d.CodigoSku,
+                    CantidadPaquetes   = d.CantidadPaquetes,
+                    PrecioPaqueteDetal = d.PrecioPaqueteDetal,
+                    PrecioPaquete      = d.PrecioPaquete,
+                    PrecioPorUnidad    = d.PrecioPorUnidad,
+                    AplicaMayorista    = d.AplicaMayorista,
+                    Subtotal           = d.CantidadPaquetes * d.PrecioPaquete
                 }).ToList()
             });
     }

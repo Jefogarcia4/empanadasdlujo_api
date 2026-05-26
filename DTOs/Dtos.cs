@@ -172,6 +172,7 @@ public class ClienteDto
     public string? Pais { get; set; }
     public string? Nit { get; set; }
     public bool Activo { get; set; }
+    public bool GuardarInfo { get; set; }
 }
 
 public class ClienteCreateDto
@@ -211,6 +212,8 @@ public class ClienteCreateDto
     public string? Nit { get; set; }
 
     public bool Activo { get; set; } = true;
+
+    public bool GuardarInfo { get; set; } = false;
 }
 
 // ─── Orden ───────────────────────────────────────────────────
@@ -219,10 +222,10 @@ public class OrdenDto
     public int IdOrden { get; set; }
     public int IdCliente { get; set; }
     public string? NombreCliente { get; set; }
-    public int? IdLista { get; set; }
-    public string? NombreLista { get; set; }
     public DateTime FechaOrden { get; set; }
     public string Estado { get; set; } = string.Empty;
+    public decimal Subtotal { get; set; }
+    public decimal Descuento { get; set; }
     public decimal Total { get; set; }
     public string? Observaciones { get; set; }
     public List<OrdenDetalleDto> Detalles { get; set; } = new();
@@ -232,8 +235,6 @@ public class OrdenCreateDto
 {
     [Required]
     public int IdCliente { get; set; }
-
-    public int? IdLista { get; set; }
 
     [MaxLength(500)]
     public string? Observaciones { get; set; }
@@ -278,8 +279,10 @@ public class OrdenDetalleDto
     public int IdDetalle { get; set; }
     public string CodigoSku { get; set; } = string.Empty;
     public int CantidadPaquetes { get; set; }
+    public decimal PrecioPaqueteDetal { get; set; }
     public decimal PrecioPaquete { get; set; }
     public decimal PrecioPorUnidad { get; set; }
+    public bool AplicaMayorista { get; set; }
     public decimal? Subtotal { get; set; }
 }
 
@@ -297,9 +300,6 @@ public class PedidoCreateDto
 {
     [Required]
     public ClienteCreateDto Cliente { get; set; } = null!;
-
-    [Required]
-    public int? IdLista { get; set; }
 
     [MaxLength(500)]
     public string? Observaciones { get; set; }
