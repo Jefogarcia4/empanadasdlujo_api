@@ -16,5 +16,4 @@ public class ListaPrecios
     public string Nombre { get; set; } = string.Empty;
 
     public ICollection<PrecioSKU> PreciosSKU { get; set; } = new List<PrecioSKU>();
-    public ICollection<Orden> Ordenes { get; set; } = new List<Orden>();
 }
