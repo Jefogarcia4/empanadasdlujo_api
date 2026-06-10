@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EmpanadasDLujo.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0b1260430268dcec3821c70181f288b9036da607")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e9c174e812f5601aa8a01763bd6a1fb161a57d5b")]
 [assembly: System.Reflection.AssemblyProductAttribute("EmpanadasDLujo.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EmpanadasDLujo.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

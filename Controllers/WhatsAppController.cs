@@ -32,8 +32,11 @@ public class WhatsAppController : ControllerBase
     {
         var token = _configuration["WhatsApp:Token"];
         var phoneNumberId = _configuration["WhatsApp:PhoneNumberId"];
-        var recipient = _configuration["WhatsApp:RecipientNumber"];
+        var defaultRecipient = _configuration["WhatsApp:RecipientNumber"];
         var apiUrl = _configuration["WhatsApp:ApiUrl"] ?? "https://graph.facebook.com/v18.0";
+
+        // Permite cambiar el destinatario desde la petición (p. ej. confirmación al comprador).
+        var recipient = string.IsNullOrWhiteSpace(dto.To) ? defaultRecipient : dto.To.Trim();
 
         if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(phoneNumberId) || string.IsNullOrEmpty(recipient))
         {

@@ -61,7 +61,8 @@ public class CatalogoController : ControllerBase
                 {
                     NombreLista = p.ListaPrecios.Nombre,
                     PrecioPaquete = p.PrecioPaquete,
-                    PrecioPorUnidad = p.PrecioPorUnidad
+                    PrecioPorUnidad = p.PrecioPorUnidad,
+                    Margen = p.Margen
                 }).ToList()
         }).ToList();
 
@@ -114,7 +115,8 @@ public class CatalogoController : ControllerBase
             {
                 NombreLista = p.ListaPrecios.Nombre,
                 PrecioPaquete = p.PrecioPaquete,
-                PrecioPorUnidad = p.PrecioPorUnidad
+                PrecioPorUnidad = p.PrecioPorUnidad,
+                Margen = p.Margen
             }).ToList()
         }).ToList();
 

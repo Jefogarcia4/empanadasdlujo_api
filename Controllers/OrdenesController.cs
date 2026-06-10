@@ -51,6 +51,10 @@ public class OrdenesController : ControllerBase
             {
                 IdDetalle          = d.IdDetalle,
                 CodigoSku          = d.CodigoSku,
+                IdCombo            = d.IdCombo,
+                CodigoCombo        = d.Combo != null ? d.Combo.CodigoCombo : null,
+                NombreCombo        = d.Combo != null ? d.Combo.Nombre : null,
+                EsCombo            = d.IdCombo != null,
                 CantidadPaquetes   = d.CantidadPaquetes,
                 PrecioPaqueteDetal = d.PrecioPaqueteDetal,
                 PrecioPaquete      = d.PrecioPaquete,
@@ -68,7 +72,7 @@ public class OrdenesController : ControllerBase
     {
         var item = await _context.Ordenes
             .Include(o => o.Cliente)
-            .Include(o => o.Detalles)
+            .Include(o => o.Detalles).ThenInclude(d => d.Combo)
             .FirstOrDefaultAsync(o => o.IdOrden == id);
 
         if (item is null) return NotFound();
@@ -88,6 +92,10 @@ public class OrdenesController : ControllerBase
             {
                 IdDetalle          = d.IdDetalle,
                 CodigoSku          = d.CodigoSku,
+                IdCombo            = d.IdCombo,
+                CodigoCombo        = d.Combo?.CodigoCombo,
+                NombreCombo        = d.Combo?.Nombre,
+                EsCombo            = d.IdCombo != null,
                 CantidadPaquetes   = d.CantidadPaquetes,
                 PrecioPaqueteDetal = d.PrecioPaqueteDetal,
                 PrecioPaquete      = d.PrecioPaquete,
@@ -107,12 +115,23 @@ public class OrdenesController : ControllerBase
         if (dto.Detalles.Count == 0)
             return BadRequest("La orden debe tener al menos un detalle.");
 
+        foreach (var d in dto.Detalles)
+        {
+            var tieneSku = !string.IsNullOrWhiteSpace(d.CodigoSku);
+            var tieneCombo = d.IdCombo.HasValue;
+            if (tieneSku == tieneCombo)
+                return BadRequest("Cada detalle debe traer codigoSku o idCombo, nunca ambos ni ninguno.");
+        }
+
+        var skuDetalles = dto.Detalles.Where(d => !string.IsNullOrWhiteSpace(d.CodigoSku)).ToList();
+        var comboDetalles = dto.Detalles.Where(d => d.IdCombo.HasValue).ToList();
+
         var listaDetal = await _context.ListasPrecios.FirstOrDefaultAsync(l => l.Nombre == LISTA_DETAL);
         var listaMayor = await _context.ListasPrecios.FirstOrDefaultAsync(l => l.Nombre == LISTA_MAYOR);
         if (listaDetal is null)
             return BadRequest($"No existe la lista de precios '{LISTA_DETAL}'.");
 
-        var skuCodigos = dto.Detalles.Select(d => d.CodigoSku).Distinct().ToList();
+        var skuCodigos = skuDetalles.Select(d => d.CodigoSku!).Distinct().ToList();
         var preciosDetal = await _context.PreciosSKU
             .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == listaDetal.IdLista)
             .ToDictionaryAsync(p => p.CodigoSku);
@@ -127,7 +146,17 @@ public class OrdenesController : ControllerBase
                 .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == listaMayor.IdLista)
                 .ToDictionaryAsync(p => p.CodigoSku);
 
-        var totalPaquetes = dto.Detalles.Sum(d => d.CantidadPaquetes);
+        var comboIds = comboDetalles.Select(d => d.IdCombo!.Value).Distinct().ToList();
+        var combos = await _context.Combos
+            .Where(c => comboIds.Contains(c.IdCombo))
+            .ToDictionaryAsync(c => c.IdCombo);
+
+        var combosInvalidos = comboIds.Where(id => !combos.ContainsKey(id) || !combos[id].Activo).ToList();
+        if (combosInvalidos.Count > 0)
+            return BadRequest($"Combos inexistentes o inactivos: {string.Join(", ", combosInvalidos)}.");
+
+        // Solo los SKUs sueltos cuentan para el umbral mayorista; los combos tienen precio fijo.
+        var totalPaquetes = skuDetalles.Sum(d => d.CantidadPaquetes);
         var calificaMayorista = totalPaquetes >= UMBRAL_MAYORISTA;
 
         var orden = new Orden
@@ -140,19 +169,19 @@ public class OrdenesController : ControllerBase
 
         decimal subtotal = 0;
         decimal total = 0;
-        foreach (var det in dto.Detalles)
+        foreach (var det in skuDetalles)
         {
-            var precioDetal = preciosDetal[det.CodigoSku];
+            var precioDetal = preciosDetal[det.CodigoSku!];
             var aplicaMayor = calificaMayorista
-                && preciosMayor.TryGetValue(det.CodigoSku, out var pm)
+                && preciosMayor.TryGetValue(det.CodigoSku!, out var pm)
                 && pm.PrecioPaquete > 0
                 && pm.PrecioPaquete < precioDetal.PrecioPaquete;
 
             var precioPaqueteFinal = aplicaMayor
-                ? preciosMayor[det.CodigoSku].PrecioPaquete
+                ? preciosMayor[det.CodigoSku!].PrecioPaquete
                 : precioDetal.PrecioPaquete;
             var precioUnidadFinal = aplicaMayor
-                ? preciosMayor[det.CodigoSku].PrecioPorUnidad
+                ? preciosMayor[det.CodigoSku!].PrecioPorUnidad
                 : precioDetal.PrecioPorUnidad;
 
             var detalle = new OrdenDetalle
@@ -168,6 +197,24 @@ public class OrdenesController : ControllerBase
 
             subtotal += det.CantidadPaquetes * precioDetal.PrecioPaquete;
             total    += det.CantidadPaquetes * precioPaqueteFinal;
+        }
+
+        foreach (var det in comboDetalles)
+        {
+            var combo = combos[det.IdCombo!.Value];
+            var detalle = new OrdenDetalle
+            {
+                IdCombo            = combo.IdCombo,
+                CantidadPaquetes   = det.CantidadPaquetes,
+                PrecioPaqueteDetal = combo.PrecioNormal,
+                PrecioPaquete      = combo.PrecioCombo,
+                PrecioPorUnidad    = combo.PrecioCombo,
+                AplicaMayorista    = false
+            };
+            orden.Detalles.Add(detalle);
+
+            subtotal += det.CantidadPaquetes * combo.PrecioNormal;
+            total    += det.CantidadPaquetes * combo.PrecioCombo;
         }
 
         orden.Subtotal  = subtotal;
@@ -192,6 +239,10 @@ public class OrdenesController : ControllerBase
                 {
                     IdDetalle          = d.IdDetalle,
                     CodigoSku          = d.CodigoSku,
+                    IdCombo            = d.IdCombo,
+                    CodigoCombo        = d.IdCombo.HasValue ? combos[d.IdCombo.Value].CodigoCombo : null,
+                    NombreCombo        = d.IdCombo.HasValue ? combos[d.IdCombo.Value].Nombre : null,
+                    EsCombo            = d.IdCombo.HasValue,
                     CantidadPaquetes   = d.CantidadPaquetes,
                     PrecioPaqueteDetal = d.PrecioPaqueteDetal,
                     PrecioPaquete      = d.PrecioPaquete,

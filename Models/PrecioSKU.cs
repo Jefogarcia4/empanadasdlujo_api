@@ -26,6 +26,9 @@ public class PrecioSKU
     [Column("precio_por_unidad", TypeName = "decimal(12,2)")]
     public decimal PrecioPorUnidad { get; set; }
 
+    [Column("margen")]
+    public int? Margen { get; set; }
+
     [ForeignKey(nameof(CodigoSku))]
     public SKU SKU { get; set; } = null!;
 

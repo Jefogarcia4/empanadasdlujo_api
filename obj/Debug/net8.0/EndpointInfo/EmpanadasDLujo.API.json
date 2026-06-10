@@ -1744,6 +1744,11 @@
           "precioPorUnidad": {
             "type": "number",
             "format": "double"
+          },
+          "margen": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1840,6 +1845,11 @@
             "minLength": 1,
             "type": "string"
           },
+          "apellidos": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
           "telefono": {
             "maxLength": 20,
             "type": "string",
@@ -1856,12 +1866,40 @@
             "type": "string",
             "nullable": true
           },
+          "casaApartamento": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "ciudad": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "departamento": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "codigoPostal": {
+            "maxLength": 20,
+            "type": "string",
+            "nullable": true
+          },
+          "pais": {
+            "maxLength": 50,
+            "type": "string",
+            "nullable": true
+          },
           "nit": {
             "maxLength": 200,
             "type": "string",
             "nullable": true
           },
           "activo": {
+            "type": "boolean"
+          },
+          "guardarInfo": {
             "type": "boolean"
           }
         },
@@ -1878,6 +1916,10 @@
             "type": "string",
             "nullable": true
           },
+          "apellidos": {
+            "type": "string",
+            "nullable": true
+          },
           "telefono": {
             "type": "string",
             "nullable": true
@@ -1890,11 +1932,34 @@
             "type": "string",
             "nullable": true
           },
+          "casaApartamento": {
+            "type": "string",
+            "nullable": true
+          },
+          "ciudad": {
+            "type": "string",
+            "nullable": true
+          },
+          "departamento": {
+            "type": "string",
+            "nullable": true
+          },
+          "codigoPostal": {
+            "type": "string",
+            "nullable": true
+          },
+          "pais": {
+            "type": "string",
+            "nullable": true
+          },
           "nit": {
             "type": "string",
             "nullable": true
           },
           "activo": {
+            "type": "boolean"
+          },
+          "guardarInfo": {
             "type": "boolean"
           }
         },
@@ -1938,11 +2003,6 @@
           "idCliente": {
             "type": "integer",
             "format": "int32"
-          },
-          "idLista": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
           },
           "observaciones": {
             "maxLength": 500,
@@ -1994,6 +2054,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "precioPaqueteDetal": {
+            "type": "number",
+            "format": "double"
+          },
           "precioPaquete": {
             "type": "number",
             "format": "double"
@@ -2001,6 +2065,9 @@
           "precioPorUnidad": {
             "type": "number",
             "format": "double"
+          },
+          "aplicaMayorista": {
+            "type": "boolean"
           },
           "subtotal": {
             "type": "number",
@@ -2025,15 +2092,6 @@
             "type": "string",
             "nullable": true
           },
-          "idLista": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "nombreLista": {
-            "type": "string",
-            "nullable": true
-          },
           "fechaOrden": {
             "type": "string",
             "format": "date-time"
@@ -2041,6 +2099,14 @@
           "estado": {
             "type": "string",
             "nullable": true
+          },
+          "subtotal": {
+            "type": "number",
+            "format": "double"
+          },
+          "descuento": {
+            "type": "number",
+            "format": "double"
           },
           "total": {
             "type": "number",
@@ -2077,17 +2143,12 @@
       "PedidoCreateDto": {
         "required": [
           "cliente",
-          "detalles",
-          "idLista"
+          "detalles"
         ],
         "type": "object",
         "properties": {
           "cliente": {
             "$ref": "#/components/schemas/ClienteCreateDto"
-          },
-          "idLista": {
-            "type": "integer",
-            "format": "int32"
           },
           "observaciones": {
             "maxLength": 500,

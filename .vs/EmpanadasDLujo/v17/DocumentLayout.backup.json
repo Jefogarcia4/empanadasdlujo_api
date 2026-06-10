@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -42,7 +46,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -70,7 +74,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwBoAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-06T19:48:22.909Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "WhatsAppController.cs",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Controllers\\WhatsAppController.cs",
               "RelativeDocumentMoniker": "Controllers\\WhatsAppController.cs",
@@ -82,20 +99,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
               "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\appsettings.json",
               "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-05-09T16:50:56.817Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Dtos.cs",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\DTOs\\Dtos.cs",
               "RelativeDocumentMoniker": "DTOs\\Dtos.cs",
@@ -107,7 +124,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -119,7 +136,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "Cliente.cs",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Models\\Cliente.cs",
               "RelativeDocumentMoniker": "Models\\Cliente.cs",
@@ -131,7 +148,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "EmpanadasDLujo.API",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\EmpanadasDLujo.API.csproj",
               "RelativeDocumentMoniker": "EmpanadasDLujo.API.csproj",
@@ -142,7 +159,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "ClientesController.cs",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Controllers\\ClientesController.cs",
               "RelativeDocumentMoniker": "Controllers\\ClientesController.cs",
@@ -154,7 +171,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Orden.cs",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Models\\Orden.cs",
               "RelativeDocumentMoniker": "Models\\Orden.cs",

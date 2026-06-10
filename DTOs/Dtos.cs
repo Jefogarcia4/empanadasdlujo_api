@@ -216,6 +216,23 @@ public class ClienteCreateDto
     public bool GuardarInfo { get; set; } = false;
 }
 
+// ─── Auth ────────────────────────────────────────────────────
+public class LoginDto
+{
+    [Required]
+    public string Username { get; set; } = string.Empty;
+
+    [Required]
+    public string Password { get; set; } = string.Empty;
+}
+
+public class LoginResponseDto
+{
+    public string Token { get; set; } = string.Empty;
+    public string Username { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
+}
+
 // ─── Orden ───────────────────────────────────────────────────
 public class OrdenDto
 {
@@ -256,6 +273,7 @@ public class CatalogoPrecioDto
     public string NombreLista { get; set; } = string.Empty;
     public decimal PrecioPaquete { get; set; }
     public decimal PrecioPorUnidad { get; set; }
+    public int? Margen { get; set; }
 }
 
 public class CatalogoSkuDto
@@ -277,7 +295,11 @@ public class CatalogoSkuDto
 public class OrdenDetalleDto
 {
     public int IdDetalle { get; set; }
-    public string CodigoSku { get; set; } = string.Empty;
+    public string? CodigoSku { get; set; }
+    public int? IdCombo { get; set; }
+    public string? CodigoCombo { get; set; }
+    public string? NombreCombo { get; set; }
+    public bool EsCombo { get; set; }
     public int CantidadPaquetes { get; set; }
     public decimal PrecioPaqueteDetal { get; set; }
     public decimal PrecioPaquete { get; set; }
@@ -286,13 +308,47 @@ public class OrdenDetalleDto
     public decimal? Subtotal { get; set; }
 }
 
+// Un detalle debe traer codigoSku O idCombo, nunca ambos (validado en el controlador).
 public class OrdenDetalleCreateDto
 {
-    [Required] [MaxLength(20)]
-    public string CodigoSku { get; set; } = string.Empty;
+    [MaxLength(20)]
+    public string? CodigoSku { get; set; }
+
+    public int? IdCombo { get; set; }
 
     [Required] [Range(1, int.MaxValue)]
     public int CantidadPaquetes { get; set; }
+}
+
+// ─── Combo ───────────────────────────────────────────────────
+public class ComboComponenteDto
+{
+    public string CodigoSku { get; set; } = string.Empty;
+    public string? Producto { get; set; }
+    public string? Sabor { get; set; }
+    public decimal GramajeG { get; set; }
+    public int UnidadesPorPaquete { get; set; }
+    public int CantidadPaquetes { get; set; }
+}
+
+public class ComboDto
+{
+    public int IdCombo { get; set; }
+    public string CodigoCombo { get; set; } = string.Empty;
+    public string Nombre { get; set; } = string.Empty;
+    public string? Subcategoria { get; set; }
+    public string? DescripcionCorta { get; set; }
+    public string? DescripcionLarga { get; set; }
+    public decimal PrecioNormal { get; set; }
+    public decimal PrecioCombo { get; set; }
+    public decimal Ahorro { get; set; }
+    public decimal? PesoTotalG { get; set; }
+    public int? UnidadesTotales { get; set; }
+    public bool Activo { get; set; }
+    public int? Orden { get; set; }
+    public string? UrlImage { get; set; }
+    public string? BadgeDescripcion { get; set; }
+    public List<ComboComponenteDto> Componentes { get; set; } = new();
 }
 
 // ─── Pedido Completo (Cliente nuevo + Orden + Detalles) ──────
@@ -349,6 +405,9 @@ public class WhatsAppTemplateDto
 
 public class WhatsAppSendMessageDto
 {
+    // Destinatario opcional. Si viene vacío se usa el número por defecto del servidor.
+    public string? To { get; set; }
+
     [Required]
     public WhatsAppTemplateDto Template { get; set; } = new();
 }

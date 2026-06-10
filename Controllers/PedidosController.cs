@@ -32,6 +32,18 @@ public class PedidosController : ControllerBase
         if (dto.Detalles.Count == 0)
             return BadRequest("La orden debe tener al menos un detalle.");
 
+        // 0. Validar que cada detalle sea SKU o combo (nunca ambos ni ninguno)
+        foreach (var d in dto.Detalles)
+        {
+            var tieneSku = !string.IsNullOrWhiteSpace(d.CodigoSku);
+            var tieneCombo = d.IdCombo.HasValue;
+            if (tieneSku == tieneCombo)
+                return BadRequest("Cada detalle debe traer codigoSku o idCombo, nunca ambos ni ninguno.");
+        }
+
+        var skuDetalles = dto.Detalles.Where(d => !string.IsNullOrWhiteSpace(d.CodigoSku)).ToList();
+        var comboDetalles = dto.Detalles.Where(d => d.IdCombo.HasValue).ToList();
+
         // 1. Resolver listas PVxD y PVxM
         var listaDetal = await _context.ListasPrecios.FirstOrDefaultAsync(l => l.Nombre == LISTA_DETAL);
         var listaMayor = await _context.ListasPrecios.FirstOrDefaultAsync(l => l.Nombre == LISTA_MAYOR);
@@ -39,7 +51,7 @@ public class PedidosController : ControllerBase
             return BadRequest($"No existe la lista de precios '{LISTA_DETAL}'.");
 
         // 2. Cargar precios de los SKUs solicitados
-        var skuCodigos = dto.Detalles.Select(d => d.CodigoSku).Distinct().ToList();
+        var skuCodigos = skuDetalles.Select(d => d.CodigoSku!).Distinct().ToList();
         var preciosDetal = await _context.PreciosSKU
             .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == listaDetal.IdLista)
             .ToDictionaryAsync(p => p.CodigoSku);
@@ -54,8 +66,19 @@ public class PedidosController : ControllerBase
                 .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == listaMayor.IdLista)
                 .ToDictionaryAsync(p => p.CodigoSku);
 
-        // 3. Aplicar regla mayorista: total de paquetes >= UMBRAL
-        var totalPaquetes = dto.Detalles.Sum(d => d.CantidadPaquetes);
+        // 2b. Cargar combos solicitados (activos)
+        var comboIds = comboDetalles.Select(d => d.IdCombo!.Value).Distinct().ToList();
+        var combos = await _context.Combos
+            .Where(c => comboIds.Contains(c.IdCombo))
+            .ToDictionaryAsync(c => c.IdCombo);
+
+        var combosInvalidos = comboIds.Where(id => !combos.ContainsKey(id) || !combos[id].Activo).ToList();
+        if (combosInvalidos.Count > 0)
+            return BadRequest($"Combos inexistentes o inactivos: {string.Join(", ", combosInvalidos)}.");
+
+        // 3. Aplicar regla mayorista: SOLO los SKUs sueltos cuentan para el umbral.
+        //    Los combos tienen precio fijo y no participan de la regla.
+        var totalPaquetes = skuDetalles.Sum(d => d.CantidadPaquetes);
         var calificaMayorista = totalPaquetes >= UMBRAL_MAYORISTA;
 
         // 4. Crear cliente
@@ -89,19 +112,21 @@ public class PedidosController : ControllerBase
         // 6. Crear detalles y acumular totales
         decimal subtotal = 0;
         decimal total = 0;
-        foreach (var det in dto.Detalles)
+
+        // 6a. Detalles de SKU suelto (precio detal/mayorista según umbral)
+        foreach (var det in skuDetalles)
         {
-            var precioDetal = preciosDetal[det.CodigoSku];
+            var precioDetal = preciosDetal[det.CodigoSku!];
             var aplicaMayor = calificaMayorista
-                && preciosMayor.TryGetValue(det.CodigoSku, out var pm)
+                && preciosMayor.TryGetValue(det.CodigoSku!, out var pm)
                 && pm.PrecioPaquete > 0
                 && pm.PrecioPaquete < precioDetal.PrecioPaquete;
 
             var precioPaqueteFinal = aplicaMayor
-                ? preciosMayor[det.CodigoSku].PrecioPaquete
+                ? preciosMayor[det.CodigoSku!].PrecioPaquete
                 : precioDetal.PrecioPaquete;
             var precioUnidadFinal = aplicaMayor
-                ? preciosMayor[det.CodigoSku].PrecioPorUnidad
+                ? preciosMayor[det.CodigoSku!].PrecioPorUnidad
                 : precioDetal.PrecioPorUnidad;
 
             var detalle = new OrdenDetalle
@@ -117,6 +142,25 @@ public class PedidosController : ControllerBase
 
             subtotal += det.CantidadPaquetes * precioDetal.PrecioPaquete;
             total    += det.CantidadPaquetes * precioPaqueteFinal;
+        }
+
+        // 6b. Detalles de combo (precio fijo; el ahorro frente al precio normal va como descuento)
+        foreach (var det in comboDetalles)
+        {
+            var combo = combos[det.IdCombo!.Value];
+            var detalle = new OrdenDetalle
+            {
+                IdCombo            = combo.IdCombo,
+                CantidadPaquetes   = det.CantidadPaquetes,
+                PrecioPaqueteDetal = combo.PrecioNormal,
+                PrecioPaquete      = combo.PrecioCombo,
+                PrecioPorUnidad    = combo.PrecioCombo,
+                AplicaMayorista    = false
+            };
+            orden.Detalles.Add(detalle);
+
+            subtotal += det.CantidadPaquetes * combo.PrecioNormal;
+            total    += det.CantidadPaquetes * combo.PrecioCombo;
         }
 
         orden.Subtotal  = subtotal;
@@ -161,6 +205,10 @@ public class PedidosController : ControllerBase
                 {
                     IdDetalle          = d.IdDetalle,
                     CodigoSku          = d.CodigoSku,
+                    IdCombo            = d.IdCombo,
+                    CodigoCombo        = d.IdCombo.HasValue ? combos[d.IdCombo.Value].CodigoCombo : null,
+                    NombreCombo        = d.IdCombo.HasValue ? combos[d.IdCombo.Value].Nombre : null,
+                    EsCombo            = d.IdCombo.HasValue,
                     CantidadPaquetes   = d.CantidadPaquetes,
                     PrecioPaqueteDetal = d.PrecioPaqueteDetal,
                     PrecioPaquete      = d.PrecioPaquete,

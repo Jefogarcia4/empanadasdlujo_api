@@ -16,6 +16,8 @@ public class AppDbContext : DbContext
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Orden> Ordenes { get; set; }
     public DbSet<OrdenDetalle> OrdenDetalles { get; set; }
+    public DbSet<Combo> Combos { get; set; }
+    public DbSet<ComboComponente> ComboComponentes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,11 +49,50 @@ public class AppDbContext : DbContext
                 "chk_orden_estado",
                 "estado IN ('PENDIENTE','CONFIRMADA','ENTREGADA','ANULADA')"));
 
-        // OrdenDetalle: check constraint cantidad_paquetes > 0
+        // OrdenDetalle: check constraints
+        //  - cantidad_paquetes > 0
+        //  - un detalle referencia un SKU O un combo, nunca ambos ni ninguno
         modelBuilder.Entity<OrdenDetalle>()
+            .ToTable(tb =>
+            {
+                tb.HasCheckConstraint("chk_cantidad", "cantidad_paquetes > 0");
+                tb.HasCheckConstraint(
+                    "chk_detalle_sku_o_combo",
+                    "(codigo_sku IS NOT NULL AND id_combo IS NULL) OR (codigo_sku IS NULL AND id_combo IS NOT NULL)");
+            });
+
+        // OrdenDetalle → Combo: sin cascade para no borrar combos al eliminar órdenes
+        modelBuilder.Entity<OrdenDetalle>()
+            .HasOne(od => od.Combo)
+            .WithMany(c => c.OrdenDetalles)
+            .HasForeignKey(od => od.IdCombo)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Combo: codigo_combo unique
+        modelBuilder.Entity<Combo>()
+            .HasIndex(c => c.CodigoCombo)
+            .IsUnique();
+
+        modelBuilder.Entity<Combo>()
+            .Property(c => c.Activo)
+            .HasDefaultValue(true);
+
+        // ComboComponente: cantidad_paquetes > 0 y unicidad (combo, sku)
+        modelBuilder.Entity<ComboComponente>()
             .ToTable(tb => tb.HasCheckConstraint(
-                "chk_cantidad",
+                "chk_combo_componente_cantidad",
                 "cantidad_paquetes > 0"));
+
+        modelBuilder.Entity<ComboComponente>()
+            .HasIndex(cc => new { cc.IdCombo, cc.CodigoSku })
+            .IsUnique();
+
+        // ComboComponente → SKU: sin cascade
+        modelBuilder.Entity<ComboComponente>()
+            .HasOne(cc => cc.SKU)
+            .WithMany()
+            .HasForeignKey(cc => cc.CodigoSku)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // OrdenDetalle: subtotal is computed column
         modelBuilder.Entity<OrdenDetalle>()

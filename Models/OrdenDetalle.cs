@@ -13,10 +13,14 @@ public class OrdenDetalle
     [Column("id_orden")]
     public int IdOrden { get; set; }
 
-    [Required]
+    // Un detalle referencia un SKU (producto suelto) O un combo, nunca ambos.
+    // La regla "exactamente uno" se valida con un check constraint en AppDbContext.
     [MaxLength(20)]
     [Column("codigo_sku")]
-    public string CodigoSku { get; set; } = string.Empty;
+    public string? CodigoSku { get; set; }
+
+    [Column("id_combo")]
+    public int? IdCombo { get; set; }
 
     [Column("cantidad_paquetes")]
     public int CantidadPaquetes { get; set; }
@@ -44,5 +48,8 @@ public class OrdenDetalle
     public Orden Orden { get; set; } = null!;
 
     [ForeignKey(nameof(CodigoSku))]
-    public SKU SKU { get; set; } = null!;
+    public SKU? SKU { get; set; }
+
+    [ForeignKey(nameof(IdCombo))]
+    public Combo? Combo { get; set; }
 }
