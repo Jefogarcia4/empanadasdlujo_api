@@ -18,6 +18,9 @@ public class AppDbContext : DbContext
     public DbSet<OrdenDetalle> OrdenDetalles { get; set; }
     public DbSet<Combo> Combos { get; set; }
     public DbSet<ComboComponente> ComboComponentes { get; set; }
+    public DbSet<WhatsAppLog> WhatsAppLogs { get; set; }
+    public DbSet<CarritoWhatsApp> CarritosWhatsApp { get; set; }
+    public DbSet<CarritoWhatsAppDetalle> CarritoWhatsAppDetalles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -139,5 +142,34 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<OrdenDetalle>()
             .Property(od => od.AplicaMayorista)
             .HasDefaultValue(false);
+
+        // ── CarritoWhatsApp (carrito borrador generado desde WhatsApp) ──
+        modelBuilder.Entity<CarritoWhatsApp>(e =>
+        {
+            e.HasIndex(c => c.Token).IsUnique();
+            e.Property(c => c.Token).HasDefaultValueSql("NEWID()");
+            e.Property(c => c.Estado).HasDefaultValue("ACTIVO");
+            e.Property(c => c.FechaCreacion).HasDefaultValueSql("GETDATE()");
+            e.ToTable(tb => tb.HasCheckConstraint(
+                "chk_carrito_estado",
+                "estado IN ('ACTIVO','CONVERTIDO')"));
+        });
+
+        // CarritoWhatsAppDetalle: mismas reglas que OrdenDetalle (cantidad > 0, SKU XOR combo).
+        // FK al carrito con cascade: al borrar un carrito se borran sus detalles.
+        modelBuilder.Entity<CarritoWhatsAppDetalle>(e =>
+        {
+            e.ToTable(tb =>
+            {
+                tb.HasCheckConstraint("chk_carrito_cantidad", "cantidad > 0");
+                tb.HasCheckConstraint(
+                    "chk_carrito_detalle_sku_o_combo",
+                    "(codigo_sku IS NOT NULL AND id_combo IS NULL) OR (codigo_sku IS NULL AND id_combo IS NOT NULL)");
+            });
+            e.HasOne(d => d.Carrito)
+                .WithMany(c => c.Detalles)
+                .HasForeignKey(d => d.IdCarrito)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }

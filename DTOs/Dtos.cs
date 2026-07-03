@@ -239,6 +239,15 @@ public class OrdenDto
     public int IdOrden { get; set; }
     public int IdCliente { get; set; }
     public string? NombreCliente { get; set; }
+    public string? ApellidosCliente { get; set; }
+    public string? TelefonoCliente { get; set; }
+    public string? EmailCliente { get; set; }
+    public string? DireccionCliente { get; set; }
+    public string? CasaApartamentoCliente { get; set; }
+    public string? CiudadCliente { get; set; }
+    public string? DepartamentoCliente { get; set; }
+    public string? CodigoPostalCliente { get; set; }
+    public string? PaisCliente { get; set; }
     public DateTime FechaOrden { get; set; }
     public string Estado { get; set; } = string.Empty;
     public decimal Subtotal { get; set; }
@@ -371,6 +380,111 @@ public class PedidoDto
     public OrdenDto Orden { get; set; } = null!;
 }
 
+// ─── Carrito por WhatsApp (contrato simplificado: teléfono + nombre + items) ──
+// Un item trae codigoSku O idCombo, nunca ambos ni ninguno (validado en el controlador).
+public class PedidoWhatsAppItemDto
+{
+    [MaxLength(20)]
+    public string? CodigoSku { get; set; }
+
+    public int? IdCombo { get; set; }
+
+    [Required] [Range(1, int.MaxValue)]
+    public int Cantidad { get; set; }
+}
+
+public class PedidoWhatsAppCreateDto
+{
+    [Required] [MaxLength(20)]
+    public string Telefono { get; set; } = string.Empty;
+
+    [MaxLength(100)]
+    public string? Nombre { get; set; }
+
+    [MaxLength(100)]
+    public string? Apellidos { get; set; }
+
+    [MaxLength(100)]
+    [EmailAddress]
+    public string? Email { get; set; }
+
+    [MaxLength(200)]
+    public string? Direccion { get; set; }
+
+    [MaxLength(100)]
+    public string? CasaApartamento { get; set; }
+
+    [MaxLength(100)]
+    public string? Ciudad { get; set; }
+
+    [MaxLength(100)]
+    public string? Departamento { get; set; }
+
+    [MaxLength(20)]
+    public string? CodigoPostal { get; set; }
+
+    [MaxLength(500)]
+    public string? Observaciones { get; set; }
+
+    [Required]
+    [MinLength(1, ErrorMessage = "El pedido debe tener al menos un producto.")]
+    public List<PedidoWhatsAppItemDto> Items { get; set; } = new();
+}
+
+// Respuesta al crear el carrito borrador: token + link para abrir la web precargada.
+public class CarritoCreatedDto
+{
+    public Guid Token { get; set; }
+    public string Url { get; set; } = string.Empty;
+}
+
+// Vista del carrito borrador para precargar la página de checkout.
+public class CarritoItemDto
+{
+    public string? CodigoSku { get; set; }
+    public int? IdCombo { get; set; }
+    public int Cantidad { get; set; }
+}
+
+public class CarritoDto
+{
+    public Guid Token { get; set; }
+    public string Estado { get; set; } = string.Empty;   // ACTIVO | CONVERTIDO
+    public int? IdOrden { get; set; }
+    public string? Nombre { get; set; }
+    public string? Apellidos { get; set; }
+    public string? Telefono { get; set; }
+    public string? Email { get; set; }
+    public string? Direccion { get; set; }
+    public string? CasaApartamento { get; set; }
+    public string? Ciudad { get; set; }
+    public string? Departamento { get; set; }
+    public string? CodigoPostal { get; set; }
+    public string? Pais { get; set; }
+    public string? Observaciones { get; set; }
+    public List<CarritoItemDto> Items { get; set; } = new();
+}
+
+public class CarritoConvertirDto
+{
+    [Required]
+    public int IdOrden { get; set; }
+}
+
+// ─── Catálogo web (SKU + precios que se muestran en la web) ───────────────────
+public class CatalogoWebDto
+{
+    public string CodigoSku { get; set; } = string.Empty;
+    public string Categoria { get; set; } = string.Empty;
+    public string Producto { get; set; } = string.Empty;
+    public string Sabor { get; set; } = string.Empty;
+    public decimal GramajeG { get; set; }
+    public int UnidadesPorPaquete { get; set; }
+    public decimal PrecioPaquete { get; set; }
+    public decimal PrecioPorUnidad { get; set; }
+    public decimal? PrecioPaqueteMayorista { get; set; }
+}
+
 // ─── WhatsApp ────────────────────────────────────────────────
 public class WhatsAppTemplateLanguageDto
 {
@@ -408,6 +522,23 @@ public class WhatsAppSendMessageDto
     // Destinatario opcional. Si viene vacío se usa el número por defecto del servidor.
     public string? To { get; set; }
 
+    // Atribución para el log de fallos (opcional): a qué orden pertenece y de qué tipo de mensaje.
+    public int? IdOrden { get; set; }
+    public string? Tipo { get; set; }   // NEGOCIO | CLIENTE
+
     [Required]
     public WhatsAppTemplateDto Template { get; set; } = new();
+}
+
+public class WhatsAppLogDto
+{
+    public int IdLog { get; set; }
+    public int? IdOrden { get; set; }
+    public string? Tipo { get; set; }
+    public string? Destinatario { get; set; }
+    public string? Plantilla { get; set; }
+    public string Estado { get; set; } = string.Empty;
+    public int? CodigoHttp { get; set; }
+    public string? MensajeError { get; set; }
+    public DateTime FechaIntento { get; set; }
 }

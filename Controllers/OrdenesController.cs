@@ -16,6 +16,9 @@ public class OrdenesController : ControllerBase
     private const string LISTA_MAYOR = "PVxM";
     private const int UMBRAL_MAYORISTA = 10;
 
+    // Valor fijo del domicilio (COP). Siempre se suma al total de todo pedido con productos.
+    private const decimal DELIVERY_FEE = 12000m;
+
     private readonly AppDbContext _context;
 
     public OrdenesController(AppDbContext context) => _context = context;
@@ -38,9 +41,18 @@ public class OrdenesController : ControllerBase
 
         var items = await query.Select(o => new OrdenDto
         {
-            IdOrden       = o.IdOrden,
-            IdCliente     = o.IdCliente,
-            NombreCliente = o.Cliente.Nombre,
+            IdOrden                = o.IdOrden,
+            IdCliente              = o.IdCliente,
+            NombreCliente          = o.Cliente.Nombre,
+            ApellidosCliente       = o.Cliente.Apellidos,
+            TelefonoCliente        = o.Cliente.Telefono,
+            EmailCliente           = o.Cliente.Email,
+            DireccionCliente       = o.Cliente.Direccion,
+            CasaApartamentoCliente = o.Cliente.CasaApartamento,
+            CiudadCliente          = o.Cliente.Ciudad,
+            DepartamentoCliente    = o.Cliente.Departamento,
+            CodigoPostalCliente    = o.Cliente.CodigoPostal,
+            PaisCliente            = o.Cliente.Pais,
             FechaOrden    = o.FechaOrden,
             Estado        = o.Estado,
             Subtotal      = o.Subtotal,
@@ -79,9 +91,18 @@ public class OrdenesController : ControllerBase
 
         return Ok(new OrdenDto
         {
-            IdOrden       = item.IdOrden,
-            IdCliente     = item.IdCliente,
-            NombreCliente = item.Cliente?.Nombre,
+            IdOrden                = item.IdOrden,
+            IdCliente              = item.IdCliente,
+            NombreCliente          = item.Cliente?.Nombre,
+            ApellidosCliente       = item.Cliente?.Apellidos,
+            TelefonoCliente        = item.Cliente?.Telefono,
+            EmailCliente           = item.Cliente?.Email,
+            DireccionCliente       = item.Cliente?.Direccion,
+            CasaApartamentoCliente = item.Cliente?.CasaApartamento,
+            CiudadCliente          = item.Cliente?.Ciudad,
+            DepartamentoCliente    = item.Cliente?.Departamento,
+            CodigoPostalCliente    = item.Cliente?.CodigoPostal,
+            PaisCliente            = item.Cliente?.Pais,
             FechaOrden    = item.FechaOrden,
             Estado        = item.Estado,
             Subtotal      = item.Subtotal,
@@ -217,9 +238,10 @@ public class OrdenesController : ControllerBase
             total    += det.CantidadPaquetes * combo.PrecioCombo;
         }
 
+        // El descuento se calcula sobre los productos; el domicilio se suma al total final.
         orden.Subtotal  = subtotal;
-        orden.Total     = total;
         orden.Descuento = subtotal - total;
+        orden.Total     = total + DELIVERY_FEE;
 
         _context.Ordenes.Add(orden);
         await _context.SaveChangesAsync();

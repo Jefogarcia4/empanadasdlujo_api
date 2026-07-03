@@ -13,6 +13,10 @@ public class CatalogoController : ControllerBase
 {
     private readonly AppDbContext _context;
 
+    // Listas de precios: 'Web' = precio detal que se muestra en la web; 'PVxM' = mayorista.
+    private const string LISTA_WEB = "Web";
+    private const string LISTA_MAYOR = "PVxM";
+
     public CatalogoController(AppDbContext context) => _context = context;
 
     /// <summary>
@@ -119,6 +123,49 @@ public class CatalogoController : ControllerBase
                 Margen = p.Margen
             }).ToList()
         }).ToList();
+
+        return Ok(resultado);
+    }
+
+    /// <summary>
+    /// Versión liviana para integraciones (ej. flujo de WhatsApp): devuelve cada SKU con
+    /// el precio que se muestra en la web (lista 'Web') y el precio mayorista (lista 'PVxM').
+    /// Solo incluye SKUs que tengan precio web.
+    /// </summary>
+    [HttpGet("web")]
+    public async Task<ActionResult<IEnumerable<CatalogoWebDto>>> GetCatalogoWeb([FromQuery] bool activo = true)
+    {
+        var skus = await _context.SKUs
+            .Include(s => s.Producto).ThenInclude(p => p.Categoria)
+            .Include(s => s.Sabor)
+            .Include(s => s.Precios).ThenInclude(p => p.ListaPrecios)
+            .Where(s => !activo || s.Activo)
+            .OrderBy(s => s.Orden ?? int.MaxValue)
+            .ThenBy(s => s.Producto.Categoria.Nombre)
+            .ThenBy(s => s.Producto.Nombre)
+            .ThenBy(s => s.CodigoSku)
+            .ToListAsync();
+
+        var resultado = skus
+            .Select(s =>
+            {
+                var web = s.Precios.FirstOrDefault(p => p.ListaPrecios.Nombre == LISTA_WEB);
+                var mayor = s.Precios.FirstOrDefault(p => p.ListaPrecios.Nombre == LISTA_MAYOR);
+                return new CatalogoWebDto
+                {
+                    CodigoSku              = s.CodigoSku,
+                    Categoria              = s.Producto.Categoria.Nombre,
+                    Producto               = s.Producto.Nombre,
+                    Sabor                  = s.Sabor.Nombre,
+                    GramajeG               = s.GramajeG,
+                    UnidadesPorPaquete     = s.UnidadesPorPaquete,
+                    PrecioPaquete          = web?.PrecioPaquete ?? 0,
+                    PrecioPorUnidad        = web?.PrecioPorUnidad ?? 0,
+                    PrecioPaqueteMayorista = mayor?.PrecioPaquete
+                };
+            })
+            .Where(x => x.PrecioPaquete > 0)
+            .ToList();
 
         return Ok(resultado);
     }

@@ -13,13 +13,21 @@ namespace EmpanadasDLujo.API.Controllers;
 public class PedidosController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IConfiguration _configuration;
 
     // Lista PVxD = precio detal (retail); lista PVxM = precio mayorista
     private const string LISTA_DETAL = "Web";
     private const string LISTA_MAYOR = "PVxM";
     private const int UMBRAL_MAYORISTA = 10;
 
-    public PedidosController(AppDbContext context) => _context = context;
+    // Valor fijo del domicilio (COP). Siempre se suma al total de todo pedido con productos.
+    private const decimal DELIVERY_FEE = 12000m;
+
+    public PedidosController(AppDbContext context, IConfiguration configuration)
+    {
+        _context = context;
+        _configuration = configuration;
+    }
 
     /// <summary>
     /// Crea cliente + orden + detalles en una sola transacción.
@@ -163,9 +171,10 @@ public class PedidosController : ControllerBase
             total    += det.CantidadPaquetes * combo.PrecioCombo;
         }
 
+        // El descuento se calcula sobre los productos; el domicilio se suma al total final.
         orden.Subtotal  = subtotal;
-        orden.Total     = total;
         orden.Descuento = subtotal - total;
+        orden.Total     = total + DELIVERY_FEE;
 
         _context.Ordenes.Add(orden);
         await _context.SaveChangesAsync();
@@ -220,5 +229,107 @@ public class PedidosController : ControllerBase
         };
 
         return CreatedAtAction(nameof(Create), new { id = orden.IdOrden }, result);
+    }
+
+    /// <summary>
+    /// Genera un carrito borrador desde el flujo de WhatsApp. Contrato simplificado:
+    /// teléfono + nombre + items (SKU o combo con cantidad). NO crea Cliente ni Orden:
+    /// guarda la info en <see cref="CarritoWhatsApp"/> y devuelve un link para que el
+    /// comprador complete la compra en la web (allí se dispara el pixel de Meta y recién
+    /// entonces se crea el pedido real vía <see cref="Create"/>).
+    /// </summary>
+    [HttpPost("whatsapp")]
+    public async Task<ActionResult<CarritoCreatedDto>> CreateWhatsApp(PedidoWhatsAppCreateDto dto)
+    {
+        if (dto.Items.Count == 0)
+            return BadRequest("El carrito debe tener al menos un producto.");
+
+        // 0. Cada item debe traer SKU o combo, nunca ambos ni ninguno.
+        foreach (var i in dto.Items)
+        {
+            var tieneSku = !string.IsNullOrWhiteSpace(i.CodigoSku);
+            var tieneCombo = i.IdCombo.HasValue;
+            if (tieneSku == tieneCombo)
+                return BadRequest("Cada item debe traer codigoSku o idCombo, nunca ambos ni ninguno.");
+        }
+
+        // 1. Validar existencia para no guardar basura (SKU con precio Web; combo activo).
+        var skuCodigos = dto.Items
+            .Where(i => !string.IsNullOrWhiteSpace(i.CodigoSku))
+            .Select(i => i.CodigoSku!)
+            .Distinct()
+            .ToList();
+
+        if (skuCodigos.Count > 0)
+        {
+            var listaDetal = await _context.ListasPrecios.FirstOrDefaultAsync(l => l.Nombre == LISTA_DETAL);
+            if (listaDetal is null)
+                return BadRequest($"No existe la lista de precios '{LISTA_DETAL}'.");
+
+            var skusConPrecio = await _context.PreciosSKU
+                .Where(p => skuCodigos.Contains(p.CodigoSku) && p.IdLista == listaDetal.IdLista)
+                .Select(p => p.CodigoSku)
+                .ToListAsync();
+
+            var skusInvalidos = skuCodigos.Except(skusConPrecio).ToList();
+            if (skusInvalidos.Count > 0)
+                return BadRequest($"SKUs inexistentes o sin precio detal: {string.Join(", ", skusInvalidos)}.");
+        }
+
+        var comboIds = dto.Items
+            .Where(i => i.IdCombo.HasValue)
+            .Select(i => i.IdCombo!.Value)
+            .Distinct()
+            .ToList();
+
+        if (comboIds.Count > 0)
+        {
+            var combosActivos = await _context.Combos
+                .Where(c => comboIds.Contains(c.IdCombo) && c.Activo)
+                .Select(c => c.IdCombo)
+                .ToListAsync();
+
+            var combosInvalidos = comboIds.Except(combosActivos).ToList();
+            if (combosInvalidos.Count > 0)
+                return BadRequest($"Combos inexistentes o inactivos: {string.Join(", ", combosInvalidos)}.");
+        }
+
+        // 2. Crear el carrito borrador (token lo genera la base de datos por defecto, pero lo
+        //    fijamos aquí para poder construir el link sin un segundo round-trip).
+        var carrito = new CarritoWhatsApp
+        {
+            Token           = Guid.NewGuid(),
+            Nombre          = string.IsNullOrWhiteSpace(dto.Nombre) ? null : dto.Nombre.Trim(),
+            Apellidos       = dto.Apellidos,
+            Telefono        = dto.Telefono,
+            Email           = dto.Email,
+            Direccion       = dto.Direccion,
+            CasaApartamento = dto.CasaApartamento,
+            Ciudad          = dto.Ciudad,
+            Departamento    = dto.Departamento,
+            CodigoPostal    = dto.CodigoPostal,
+            Pais            = "Colombia",
+            Observaciones   = dto.Observaciones,
+            Estado          = "ACTIVO"
+        };
+
+        foreach (var i in dto.Items)
+        {
+            carrito.Detalles.Add(new CarritoWhatsAppDetalle
+            {
+                CodigoSku = string.IsNullOrWhiteSpace(i.CodigoSku) ? null : i.CodigoSku,
+                IdCombo   = i.IdCombo,
+                Cantidad  = i.Cantidad
+            });
+        }
+
+        _context.CarritosWhatsApp.Add(carrito);
+        await _context.SaveChangesAsync();
+
+        // 3. Construir el link de la web precargada.
+        var baseUrl = (_configuration["Frontend:BaseUrl"] ?? string.Empty).TrimEnd('/');
+        var url = $"{baseUrl}/carrito/{carrito.Token}";
+
+        return Ok(new CarritoCreatedDto { Token = carrito.Token, Url = url });
     }
 }
