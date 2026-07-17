@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<WhatsAppLog> WhatsAppLogs { get; set; }
     public DbSet<CarritoWhatsApp> CarritosWhatsApp { get; set; }
     public DbSet<CarritoWhatsAppDetalle> CarritoWhatsAppDetalles { get; set; }
+    public DbSet<OtpCodigo> OtpCodigos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -170,6 +171,15 @@ public class AppDbContext : DbContext
                 .WithMany(c => c.Detalles)
                 .HasForeignKey(d => d.IdCarrito)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ── OtpCodigo (códigos OTP del portal de clientes) ──
+        modelBuilder.Entity<OtpCodigo>(e =>
+        {
+            e.HasIndex(o => new { o.Telefono, o.Consumido, o.ExpiraEn });
+            e.Property(o => o.Intentos).HasDefaultValue(0);
+            e.Property(o => o.Consumido).HasDefaultValue(false);
+            e.Property(o => o.FechaCreacion).HasDefaultValueSql("GETDATE()");
         });
     }
 }

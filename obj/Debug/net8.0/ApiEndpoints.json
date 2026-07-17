@@ -1,5 +1,78 @@
 [
   {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/Auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "EmpanadasDLujo.API.DTOs.LoginDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EmpanadasDLujo.API.DTOs.LoginResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.CarritoController",
+    "Method": "Get",
+    "RelativePath": "api/Carrito/{token}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "token",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EmpanadasDLujo.API.DTOs.CarritoDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.CarritoController",
+    "Method": "Convertir",
+    "RelativePath": "api/Carrito/{token}/convertir",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "token",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "EmpanadasDLujo.API.DTOs.CarritoConvertirDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "EmpanadasDLujo.API.Controllers.CatalogoController",
     "Method": "GetCatalogo",
     "RelativePath": "api/Catalogo",
@@ -52,6 +125,32 @@
     "ReturnTypes": [
       {
         "Type": "System.Collections.Generic.IEnumerable\u00601[[EmpanadasDLujo.API.DTOs.CatalogoSkuDto, EmpanadasDLujo.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.CatalogoController",
+    "Method": "GetCatalogoWeb",
+    "RelativePath": "api/Catalogo/web",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "activo",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[EmpanadasDLujo.API.DTOs.CatalogoWebDto, EmpanadasDLujo.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -284,6 +383,58 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.CombosController",
+    "Method": "GetCombos",
+    "RelativePath": "api/Combos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "activo",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[EmpanadasDLujo.API.DTOs.ComboDto, EmpanadasDLujo.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.CombosController",
+    "Method": "GetByCodigo",
+    "RelativePath": "api/Combos/{codigo}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "codigo",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EmpanadasDLujo.API.DTOs.ComboDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "EmpanadasDLujo.API.Controllers.ListasPreciosController",
@@ -531,6 +682,104 @@
     "ReturnTypes": [
       {
         "Type": "EmpanadasDLujo.API.DTOs.PedidoDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.PedidosController",
+    "Method": "CreateWhatsApp",
+    "RelativePath": "api/Pedidos/whatsapp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "EmpanadasDLujo.API.DTOs.PedidoWhatsAppCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EmpanadasDLujo.API.DTOs.CarritoCreatedDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.PortalController",
+    "Method": "MisPedidos",
+    "RelativePath": "api/Portal/mis-pedidos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[EmpanadasDLujo.API.DTOs.OrdenDto, EmpanadasDLujo.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.PortalController",
+    "Method": "SolicitarOtp",
+    "RelativePath": "api/Portal/otp/solicitar",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "EmpanadasDLujo.API.DTOs.OtpSolicitarDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EmpanadasDLujo.API.DTOs.OtpSolicitarRespuestaDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.PortalController",
+    "Method": "VerificarOtp",
+    "RelativePath": "api/Portal/otp/verificar",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "EmpanadasDLujo.API.DTOs.OtpVerificarDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EmpanadasDLujo.API.DTOs.PortalSesionDto",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -992,6 +1241,42 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EmpanadasDLujo.API.Controllers.WhatsAppController",
+    "Method": "GetLogs",
+    "RelativePath": "api/WhatsApp/logs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idOrden",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "estado",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "take",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[EmpanadasDLujo.API.DTOs.WhatsAppLogDto, EmpanadasDLujo.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "EmpanadasDLujo.API.Controllers.WhatsAppController",

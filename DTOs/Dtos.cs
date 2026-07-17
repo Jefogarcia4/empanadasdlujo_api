@@ -173,6 +173,10 @@ public class ClienteDto
     public string? Nit { get; set; }
     public bool Activo { get; set; }
     public bool GuardarInfo { get; set; }
+
+    // Solo se pueblan en el listado del admin (GetAll): no son columnas de la tabla.
+    public int TotalPedidos { get; set; }
+    public DateTime? UltimoPedido { get; set; }
 }
 
 public class ClienteCreateDto
@@ -214,6 +218,43 @@ public class ClienteCreateDto
     public bool Activo { get; set; } = true;
 
     public bool GuardarInfo { get; set; } = false;
+}
+
+// ─── Portal de clientes (login por OTP vía WhatsApp) ─────────
+public class OtpSolicitarDto
+{
+    [Required]
+    [MaxLength(20)]
+    public string Telefono { get; set; } = string.Empty;
+}
+
+public class OtpSolicitarRespuestaDto
+{
+    public bool Enviado { get; set; }
+    public DateTime ExpiraEn { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+
+    // Solo se llena en modo dev (Otp:DevReturnCode = true) para probar sin WhatsApp. Nunca en producción.
+    public string? CodigoDev { get; set; }
+}
+
+public class OtpVerificarDto
+{
+    [Required]
+    [MaxLength(20)]
+    public string Telefono { get; set; } = string.Empty;
+
+    [Required]
+    [RegularExpression("^[0-9]{6}$", ErrorMessage = "El código debe tener 6 dígitos.")]
+    public string Codigo { get; set; } = string.Empty;
+}
+
+public class PortalSesionDto
+{
+    public string Token { get; set; } = string.Empty;
+    public string Telefono { get; set; } = string.Empty;
+    public string? Nombre { get; set; }
+    public DateTime ExpiraEn { get; set; }
 }
 
 // ─── Auth ────────────────────────────────────────────────────

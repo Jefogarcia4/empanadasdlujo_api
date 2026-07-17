@@ -89,24 +89,55 @@ public class PedidosController : ControllerBase
         var totalPaquetes = skuDetalles.Sum(d => d.CantidadPaquetes);
         var calificaMayorista = totalPaquetes >= UMBRAL_MAYORISTA;
 
-        // 4. Crear cliente
-        var cliente = new Cliente
+        // 4. Resolver cliente: si ya existe (por teléfono, luego email) se reutiliza y se
+        //    actualiza solo con los datos entrantes que vengan con valor; si no, se crea.
+        var telefono = string.IsNullOrWhiteSpace(dto.Cliente.Telefono) ? null : dto.Cliente.Telefono.Trim();
+        var email    = string.IsNullOrWhiteSpace(dto.Cliente.Email) ? null : dto.Cliente.Email.Trim();
+
+        Cliente? cliente = null;
+        if (telefono is not null)
+            cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.Telefono == telefono);
+        if (cliente is null && email is not null)
+            cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.Email == email);
+
+        if (cliente is null)
         {
-            Nombre          = dto.Cliente.Nombre,
-            Apellidos       = dto.Cliente.Apellidos,
-            Telefono        = dto.Cliente.Telefono,
-            Email           = dto.Cliente.Email,
-            Direccion       = dto.Cliente.Direccion,
-            CasaApartamento = dto.Cliente.CasaApartamento,
-            Ciudad          = dto.Cliente.Ciudad,
-            Departamento    = dto.Cliente.Departamento,
-            CodigoPostal    = dto.Cliente.CodigoPostal,
-            Pais            = dto.Cliente.Pais ?? "Colombia",
-            Nit             = dto.Cliente.Nit,
-            Activo          = dto.Cliente.Activo,
-            GuardarInfo     = dto.Cliente.GuardarInfo
-        };
-        _context.Clientes.Add(cliente);
+            cliente = new Cliente
+            {
+                Nombre          = dto.Cliente.Nombre,
+                Apellidos       = dto.Cliente.Apellidos,
+                Telefono        = telefono,
+                Email           = email,
+                Direccion       = dto.Cliente.Direccion,
+                CasaApartamento = dto.Cliente.CasaApartamento,
+                Ciudad          = dto.Cliente.Ciudad,
+                Departamento    = dto.Cliente.Departamento,
+                CodigoPostal    = dto.Cliente.CodigoPostal,
+                Pais            = dto.Cliente.Pais ?? "Colombia",
+                Nit             = dto.Cliente.Nit,
+                Activo          = dto.Cliente.Activo,
+                GuardarInfo     = dto.Cliente.GuardarInfo
+            };
+            _context.Clientes.Add(cliente);
+        }
+        else
+        {
+            // Actualiza solo los campos que llegan con valor; no borra datos previos con vacíos.
+            if (!string.IsNullOrWhiteSpace(dto.Cliente.Nombre))          cliente.Nombre          = dto.Cliente.Nombre.Trim();
+            if (!string.IsNullOrWhiteSpace(dto.Cliente.Apellidos))       cliente.Apellidos       = dto.Cliente.Apellidos.Trim();
+            if (telefono is not null)                                     cliente.Telefono        = telefono;
+            if (email is not null)                                        cliente.Email           = email;
+            if (!string.IsNullOrWhiteSpace(dto.Cliente.Direccion))       cliente.Direccion       = dto.Cliente.Direccion.Trim();
+            if (!string.IsNullOrWhiteSpace(dto.Cliente.CasaApartamento)) cliente.CasaApartamento = dto.Cliente.CasaApartamento.Trim();
+            if (!string.IsNullOrWhiteSpace(dto.Cliente.Ciudad))          cliente.Ciudad          = dto.Cliente.Ciudad.Trim();
+            if (!string.IsNullOrWhiteSpace(dto.Cliente.Departamento))    cliente.Departamento    = dto.Cliente.Departamento.Trim();
+            if (!string.IsNullOrWhiteSpace(dto.Cliente.CodigoPostal))    cliente.CodigoPostal    = dto.Cliente.CodigoPostal.Trim();
+            if (!string.IsNullOrWhiteSpace(dto.Cliente.Pais))            cliente.Pais            = dto.Cliente.Pais.Trim();
+            if (!string.IsNullOrWhiteSpace(dto.Cliente.Nit))             cliente.Nit             = dto.Cliente.Nit.Trim();
+            // El cliente vuelve a estar activo al hacer un nuevo pedido; conserva GuardarInfo si ya estaba en true.
+            cliente.Activo = true;
+            if (dto.Cliente.GuardarInfo) cliente.GuardarInfo = true;
+        }
 
         // 5. Crear orden
         var orden = new Orden

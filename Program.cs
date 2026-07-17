@@ -1,7 +1,12 @@
+using System.Text;
+using EmpanadasDLujo.API.Controllers;
 using EmpanadasDLujo.API.Data;
 using EmpanadasDLujo.API.Middleware;
+using EmpanadasDLujo.API.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,14 +15,32 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ─── Basic Authentication ────────────────────────────────────
+// ─── Authentication ──────────────────────────────────────────
+// BasicAuth (esquema por defecto) protege el admin; ClientJwt protege el portal de clientes.
 builder.Services.AddAuthentication("BasicAuth")
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthHandler>("BasicAuth", null);
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthHandler>("BasicAuth", null)
+    .AddJwtBearer(PortalController.ClientScheme, options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] ?? string.Empty))
+        };
+    });
 
 builder.Services.AddAuthorization();
 
 // ─── HttpClient ──────────────────────────────────────────────
 builder.Services.AddHttpClient();
+
+// ─── Servicios propios ───────────────────────────────────────
+builder.Services.AddScoped<IWhatsAppSender, WhatsAppSender>();
 
 // ─── Controllers ─────────────────────────────────────────────
 builder.Services.AddControllers();

@@ -57,7 +57,9 @@ public class ClientesController : ControllerBase
             Pais = c.Pais,
             Nit = c.Nit,
             Activo = c.Activo,
-            GuardarInfo = c.GuardarInfo
+            GuardarInfo = c.GuardarInfo,
+            TotalPedidos = c.Ordenes.Count,
+            UltimoPedido = c.Ordenes.Max(o => (DateTime?)o.FechaOrden)
         }).ToListAsync();
 
         return Ok(items);

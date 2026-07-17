@@ -134,3 +134,4 @@ D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Release\net8.0\l
 D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Release\net8.0\linux-x64\EmpanadasDLujo.API.pdb
 D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Release\net8.0\linux-x64\EmpanadasDLujo.API.genruntimeconfig.cache
 D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\obj\Release\net8.0\linux-x64\ref\EmpanadasDLujo.API.dll
+D:\Jefferson_Projects\EmpanadasDLujo_Git\empanadasdlujo_api\bin\Release\net8.0\linux-x64\Microsoft.AspNetCore.Authentication.JwtBearer.dll
