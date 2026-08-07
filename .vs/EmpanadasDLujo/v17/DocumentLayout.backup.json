@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\services\\whatsappsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:services\\whatsappsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\controllers\\portalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:controllers\\portalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\controllers\\whatsappcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -49,10 +49,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\empanadasdlujo.api.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
       "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:empanadasdlujo.api.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|d:\\jefferson_projects\\empanadasdlujo_git\\empanadasdlujo_api\\data\\migrations\\2026-07-05_otp_codigo.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame",
-      "RelativeMoniker": "D:0:0:{5D9BC822-63E7-4FEC-839C-0B50CE5C3284}|EmpanadasDLujo.API.csproj|solutionrelative:data\\migrations\\2026-07-05_otp_codigo.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
     }
   ],
   "DocumentGroupContainers": [
@@ -62,7 +58,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 11,
           "Children": [
             {
               "$type": "Bookmark",
@@ -90,7 +86,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "PortalController.cs",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Controllers\\PortalController.cs",
               "RelativeDocumentMoniker": "Controllers\\PortalController.cs",
@@ -98,12 +94,11 @@
               "RelativeToolTip": "Controllers\\PortalController.cs",
               "ViewState": "AgIAAEkAAAAAAAAAAAAAwFsAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-05T21:10:46.385Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-05T21:10:46.385Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "WhatsAppSender.cs",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Services\\WhatsAppSender.cs",
               "RelativeDocumentMoniker": "Services\\WhatsAppSender.cs",
@@ -111,20 +106,18 @@
               "RelativeToolTip": "Services\\WhatsAppSender.cs",
               "ViewState": "AgIAADoAAAAAAAAAAAAlwFwAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-05T21:07:24.932Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-05T21:07:24.932Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "2026-07-05_otp_codigo.sql ",
+              "Title": "2026-07-05_otp_codigo.sql",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Data\\Migrations\\2026-07-05_otp_codigo.sql",
               "RelativeDocumentMoniker": "Data\\Migrations\\2026-07-05_otp_codigo.sql",
               "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\Data\\Migrations\\2026-07-05_otp_codigo.sql",
               "RelativeToolTip": "Data\\Migrations\\2026-07-05_otp_codigo.sql",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2026-07-05T20:10:28.543Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-05T20:10:28.543Z"
             },
             {
               "$type": "Document",
@@ -148,18 +141,17 @@
               "RelativeToolTip": "Controllers\\WhatsAppController.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-14T18:35:56.985Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-14T18:35:56.985Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
               "ToolTip": "D:\\Jefferson_Projects\\EmpanadasDLujo_Git\\empanadasdlujo_api\\appsettings.json",
               "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABcAAADTAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-05-09T16:50:56.817Z",
               "EditorCaption": ""
